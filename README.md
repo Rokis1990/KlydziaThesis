@@ -1,5 +1,6 @@
 # KlydziaThesis
 This is going to be the repository of R scripts that I use to make econometric models for my Master's thesis in economics. 
+For the general scientific updates of my project see https://www.researchgate.net/project/The-impact-of-Labour-and-Capital-inputs-on-Production-and-Income-in-modern-economies-a-case-study-of-Lithuania-and-Poland
 
 The thesis' preliminary name is: 
 The Impact of Labour and Capital inputs on Production and Income in modern economies (a case study of Lithuania and Poland)
