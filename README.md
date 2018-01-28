@@ -1,5 +1,8 @@
 # KlydziaThesis
 This is going to be the repository of R scripts that I use to make econometric models for my Master's thesis in economics. 
+
+For downloading R please visit https://cran.r-project.org/
+
 For the general scientific updates of my project see https://www.researchgate.net/project/The-impact-of-Labour-and-Capital-inputs-on-Production-and-Income-in-modern-economies-a-case-study-of-Lithuania-and-Poland
 
 The thesis' preliminary name is: 
@@ -8,7 +11,7 @@ The Impact of Labour and Capital inputs on Production and Income in modern econo
 I will try to add references to sources where I find the snippets that I use, modify and adapt to create my own models. 
 In case I don't mention some source, please don't be mad, feel free to contact me via GitHub or social media (Rokis1990, Rokas Klydžia).
 
-I will mainly use MicEcon, MicEconCES and vars packages for the modelling and calculations.
+I will mainly use MicEcon, MicEconCES and vars packages in R for the modelling and calculations.
 
 This is not intended to be a sophisticated case of model building example, but rather just an archive, a repository in the new tradition of easily reproducible economic studies.
 
