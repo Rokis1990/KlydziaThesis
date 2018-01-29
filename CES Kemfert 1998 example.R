@@ -673,3 +673,5 @@ result3 <- colorRows( result3 )
 xTab3 <- xtable( result3, align = "lrrrrrrrrr",
                  digits = c( 0, rep( 4, 6 ), 0, 0, 4 ) )
 printTable( xTab3, fileName = "kemfert3Coef.tex" )
+
+# end of snippet
