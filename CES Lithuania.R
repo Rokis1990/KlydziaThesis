@@ -1,5 +1,10 @@
 library(micEconCES)
 
+a<-data("MishraCES")
+a
+colMeans(MishraCES)
+data("GermanIndustry")
+
 data <- read.delim(("~/R/ekonometrijaPROJ/data.txt"))
 attach(data)
 y0 <- ts(log(GVA_LT)*100, start=c(1999, 1), frequency=4)
