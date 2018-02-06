@@ -3,7 +3,7 @@ library(micEconCES)
 a<-data("MishraCES")
 a
 colMeans(MishraCES)
-data("GermanIndustry")
+b<-data("GermanIndustry")
 
 data <- read.delim(("~/R/ekonometrijaPROJ/data.txt"))
 attach(data)
