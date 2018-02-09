@@ -7,6 +7,8 @@ b<-data("GermanIndustry")
 
 data <- read.delim(("~/R/ekonometrijaPROJ/data.txt"))
 attach(data)
+
+data_ol <- read.delim("https://raw.githubusercontent.com/Rokis1990/KlydziaThesis/master/data/data.txt") # tik pademonstravimui kaip ištraukti online txt failus. Githube reik eiti į raw direktoriją.
 y0 <- ts(log(GVA_LT)*100, start=c(1999, 1), frequency=4)
 y <- y0 - decompose(y0)$seasonal
 l0 <- ts(log(SEMPh_LT)*100, start=c(1999, 1), frequency=4)
