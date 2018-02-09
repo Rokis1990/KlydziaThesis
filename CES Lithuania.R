@@ -95,7 +95,7 @@ cesData$y4 <- cesData$y4 + 1.5 * rnorm(200)
 
 #<TRIAL>
 cesNlsLT <- nls( y2 ~ gamma * ( delta * x1^(-rho) + (1 - delta) * x2^(-rho) )^(-phi / rho),
-  data = LTTrialData, start = c(gamma = 0.5, delta = 0,5, rho = 0.25, phi = 1))
+  data = LTTrialData, start = c(gamma = 0.5, delta = 0.5, rho = 0.25, phi = 1))
 # kadangi metė klaida "Error in start[[i]] : subscript out of bounds"
 # pamėginau iš savo logaritmuotų duomenų išmesti *100, nes vis tiek ne procentinės ten išraiškos, o šimtai ir apie tūkstantį gaunasi padauginus iš 100.
 #dabar reikia kelis kintamuosius "pragroti" iš naujo ir pamėginti viršuje esančią operaciją dar kartą.
