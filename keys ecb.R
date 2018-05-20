@@ -1,6 +1,8 @@
 # ecb keys
 library(ecb)
 library(ggplot2)
+install.packages("lubridate")
+library(lubridate)
 # sample key
 key <- "ICP.M.LT+PL+U2.N.000000+XEF000.4.ANR" # hicp
 
@@ -124,11 +126,15 @@ filterLT <- list(lastNObservations = 93, detail = "full") # Lietuvos duomenys il
 # Lietuvos gamyba ir pajamos
 GDP_LT <- get_data(keyLT_GDP, filterLT)[c(24,25)] # GDP
 GVA_LT <- get_data(keyLT_GVA, filterLT)[c(21,22)] # GVA
-colnames(GDP_LT) <- c("Date", "GDP_LT")
+gdp <- ts(log(GDP_LT), start = c(1998, 2), frequency = 4)
+#apjungimas
+colnames(GDP_LT) <- c("date", "GDP_LT")
 GDP_LT
-colnames(GVA_LT) <- c("Date", "GVA_LT")
-GVA_LT
+colnames(GVA_LT) <- c("date", "GVA_LT")
+ts(GVA_LT, frequency = 4)
 dataLT <- merge(GDP_LT, GVA_LT)
+dataLT$date<-parse_date_time(dataLT$date, "y q")
+dataLT
 # Lietuvos darbas
 LF_LT <- get_data()
 
