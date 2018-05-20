@@ -1,5 +1,6 @@
 # ecb keys
 library(ecb)
+library(ggplot2)
 # sample key
 key <- "ICP.M.LT+PL+U2.N.000000+XEF000.4.ANR" # hicp
 
@@ -114,26 +115,30 @@ keyLT_ <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N11MG._T._Z.XDC.V.N" # Gand equipment and 
 
 # </Lietuvos raktai>
 
-# <ecb paketo parametrai>
+# <ecb paketui reikalingi parametrai>
 # Lietuvos laikotarpio filtras
 filterLT <- list(lastNObservations = 93, detail = "full") # Lietuvos duomenys ilgesniam laikotarpiui. Nuo 1995Q1 iki 2018Q1 imtinai.
-# </ecb paketo paraetrai>
-get_dimensions(keyLT_GDP)
+# </ecb paketui reikalingi paraetrai>
+
 # <Lietuvos duomenų išgavimas>
 # Lietuvos gamyba ir pajamos
-GDP_LT <- get_data(keyLT_GDP, filterLT) # GDP
-GVA_LT <- get_data(keyLT_GVA, filterLT) # GVA
-
+GDP_LT <- get_data(keyLT_GDP, filterLT)[c(24,25)] # GDP
+GVA_LT <- get_data(keyLT_GVA, filterLT)[c(21,22)] # GVA
+colnames(GDP_LT) <- c("Date", "GDP_LT")
+GDP_LT
+colnames(GVA_LT) <- c("Date", "GVA_LT")
+GVA_LT
+dataLT <- merge(GDP_LT, GVA_LT)
 # Lietuvos darbas
 LF_LT <- get_data()
 
 #neveikia LTEMPLh_LT <- get_data(keyLT_TEMPLh, filterLT) # Total employemnt, hours worked
 #neveikia LTEMPLp_LT <- get_data(keyLT_TEMPLp, filterLT)  # Total employment, persons
-LEMPLh_LT <- get_data(keyLT_EMPLh, filterLT) # Employees, hours worked
-LEMPLp_LT <- get_data(keyLT_EMPLp, filterLT) # Employees, persons
-LHC_LT <- get_data(keyLT_LHC, filterLT) # Hourly compensation
-LCe_LT <- get_data(keyLT_LCe, filterLT) # Compensation per employee
-LPh_LT <- get_data(keyLT_LPh, filterLT)  # Labour productivity (per hours worked)
+LEMPLh_LT <- get_data(keyLT_EMPLh, filterLT)[c(22,23)] # Employees, hours worked
+LEMPLp_LT <- get_data(keyLT_EMPLp, filterLT)[c(22,23)] # Employees, persons
+LHC_LT <- get_data(keyLT_LHC, filterLT)[c(23,24)] # Hourly compensation
+LCe_LT <- get_data(keyLT_LCe, filterLT)[c(23,24)] # Compensation per employee
+LPh_LT <- get_data(keyLT_LPh, filterLT)[c(24,25)]  # Labour productivity (per hours worked)
 LPp_LT <- get_data(keyLT_LPp, filterLT) # Labour productivity (per persons)
 LCEMPLa_LT <- get_data(keyLT_CEa, filterLT) # Compensation of employees, annual
 
@@ -150,8 +155,6 @@ KTC_LT <- get_data(keyLT_K07, filterLT) # GFCF Total construction (Buildings and
 KWM_LT <- get_data(keyLT_K08, filterLT) # GFCF Machinery and equipment and weapons systems
 KWO_LT <- get_data(keyLT_K09, filterLT) # GFCF Other machinery and equipment and weapons systems
 
-get_data
-finconsLT <- get_data(keyLT_2, filterLT)
 
 # </Lietuvos duomenų išgavimas>
 # </Lietuva>
@@ -209,3 +212,44 @@ gdpPl <- get_data(keyPL_1, filterPL)
 # </Lenkijos duomenų išgavimas>
 # </Lenkija>
 
+
+
+# Duomenų atvaizdavimas su ggplot2
+
+GVA <- convert_dates(GVA_LT$obstime)
+GDP_LT <- convert_dates(GDP_LT$obstime)
+
+ggplot(GDP_LT, aes(x = obstime, y = obsvalue, color = title)) +
+  geom_line() +
+  facet_wrap(~ref_area, ncol = 3) +
+  theme_bw(8) +
+  theme(legend.position = "bottom") +
+  labs(x = NULL, y = "Percent per annum\n", color = NULL,
+       title = "Lietuvos BVP")
+
+
+library(ecb)
+library(ggplot2)
+
+key <- "ICP.M.DE+FR+ES+IT+NL+U2.N.000000+XEF000.4.ANR"
+filter <- list(lastNObservations = 12, detail = "full")
+
+hicp <- get_data(key, filter)
+
+hicp$obstime <- convert_dates(hicp$obstime)
+
+ggplot(hicp, aes(x = obstime, y = obsvalue, color = title)) +
+  geom_line() +
+  facet_wrap(~ref_area, ncol = 3) +
+  theme_bw(8) +
+  theme(legend.position = "bottom") +
+  labs(x = NULL, y = "Percent per annum\n", color = NULL,
+       title = "HICP - headline and core\n")
+
+library(zoo)
+x <- c("Q1/13","Q2/14")
+y <- c("2011Q1", "2012Q3")
+as.Date(as.yearqtr(x, format ="Q%q/%y"))
+x
+as.Date(as.yearqtr(y, format="%Y%Q"))
+y
