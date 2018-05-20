@@ -177,6 +177,8 @@ keyPL_LF <- " " # Lenkijos darbo jėga
 keyPL_LPh <- "MNA.Q.Y.PL.W0.S1.S1._Z.LPR_HW._Z._T._Z.XDC.LR.N" # Labour productivity (per hours worked)
 keyPL_HC <- "MNA.Q.Y.PL.W2.S1.S1._Z.COM_HW._Z._T._Z.XDC.V.N" # Hourly compensation
 keyPL_CEq <- "MNA.Q.N.PL.W2.S1.S1.D.D1._Z._T._Z.XDC.V.N" # Compensation of employees, quarterly
+keyPL_TEMPLh <- "MNA.Q.Y.PL.W2.S1.S1._Z.EMP._Z._T._Z.HW._Z.N" # Total employment, hours worked
+keyPL_EMPLh <- "ENA.Q.Y.PL.W2.S1.S1._Z.SAL._Z._T._Z.HW._Z.N" # Employees, hourw worked
 # Lenkijos kapitalas (nepriklausomi kintamieji)
 # visas
 keyPL_K <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N11G._T._Z.XDC.V.N" # GFCF Fixed assets by type
