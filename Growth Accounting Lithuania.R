@@ -3,6 +3,7 @@
 # https://econometricswithr.wordpress.com/tag/growth-accounting/
 
 install.packages("pwt8")
+library(pwt8)
 data(pwt8.1) #neveikia
 pwtData 
 
