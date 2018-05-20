@@ -81,11 +81,15 @@ keyLT_GVA <- "MNA.Q.Y.LT.W2.S1.S1.B.B1G._Z.F._Z.EUR_R_B1GQ.V.N" # Gross value ad
 
 # Lietuvos darbas (nepriklausomi kintamieji)
 keyLT_LF <- " " # Lietuvos darbo jėga
+keyLT_TEMPLh <- "MNA.Q.Y.LT.W2.S1.S1._Z.EMP._Z._T._Z.HW._Z.N" # Total employemnt, hours worked
+keyLT_TEMPLp <- "MNA.Q.Y.LT.W2.S1.S1._Z.EMP._Z._T._Z.PS._Z.N" # Total employment, persons
+keyLT_EMPLh <- "ENA.Q.Y.LT.W2.S1.S1._Z.SAL._Z._T._Z.HW._Z.N" # Employees, hours worked
+keyLT_EMPLp <- "ENA.Q.Y.LT.W2.S1.S1._Z.SAL._Z._T._Z.PS._Z.N" # Employees, persons
 keyLT_LPh <- "MNA.Q.Y.LT.W0.S1.S1._Z.LPR_HW._Z._T._Z.XDC.LR.N" # Labour productivity (per hours worked)
 keyLT_LPp <- "MNA.Q.Y.LT.W0.S1.S1._Z.LPR_PS._Z._T._Z.XDC.LR.N" # Labour productivity (per persons)
 keyLT_LHC <- "MNA.Q.Y.LT.W2.S1.S1._Z.COM_HW._Z._T._Z.XDC.V.N" # Hourly compensation
-keyLT_LHCe <- "MNA.Q.Y.LT.W2.S1.S1._Z.COM_PS._Z._T._Z.XDC.V.N" # Compensation per employee
-
+keyLT_LCe <- "MNA.Q.Y.LT.W2.S1.S1._Z.COM_PS._Z._T._Z.XDC.V.N" # Compensation per employee
+keyLT_CEa <- "MNA.A.N.LT.W2.S1.S1.D.D1._Z._T._Z.EUR.V.N" # Compensation of employees, annual
 
 # Lietuvos kapitalas (nepriklausomi kintamieji)
 # visas
@@ -101,7 +105,7 @@ keyLT_K06 <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N117G._T._Z.XDC.V.N" # GFCF Intellectua
 keyLT_K07 <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N11KG._T._Z.XDC.V.N" # GFCF Total construction (Buildings and structures)
 keyLT_K08 <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N11MG._T._Z.XDC.V.N" # GFCF Machinery and equipment and weapons systems
 keyLT_K09 <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N11OG._T._Z.XDC.V.N" # GFCF Other machinery and equipment and weapons systems
-keyLT_ <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N11MG._T._Z.XDC.V.N" # GFCF Machinery and equipment and weapons systems
+keyLT_ <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N11MG._T._Z.XDC.V.N" # Gand equipment and weapons systems
 
 # Papildomi (egzogeniniai) Lietuvos kintamieji
 # Lietuvos eksportas
@@ -114,7 +118,7 @@ keyLT_ <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N11MG._T._Z.XDC.V.N" # GFCF Machinery and 
 # Lietuvos laikotarpio filtras
 filterLT <- list(lastNObservations = 93, detail = "full") # Lietuvos duomenys ilgesniam laikotarpiui. Nuo 1995Q1 iki 2018Q1 imtinai.
 # </ecb paketo paraetrai>
-
+get_dimensions(keyLT_GDP)
 # <Lietuvos duomenų išgavimas>
 # Lietuvos gamyba ir pajamos
 GDP_LT <- get_data(keyLT_GDP, filterLT) # GDP
@@ -122,10 +126,16 @@ GVA_LT <- get_data(keyLT_GVA, filterLT) # GVA
 
 # Lietuvos darbas
 LF_LT <- get_data()
-LHC_LT <- get_data()
-LHCe_LT <- get_data()
-LPh_LT <- get_data()
-LPp_LT <- get_data()
+
+#neveikia LTEMPLh_LT <- get_data(keyLT_TEMPLh, filterLT) # Total employemnt, hours worked
+#neveikia LTEMPLp_LT <- get_data(keyLT_TEMPLp, filterLT)  # Total employment, persons
+LEMPLh_LT <- get_data(keyLT_EMPLh, filterLT) # Employees, hours worked
+LEMPLp_LT <- get_data(keyLT_EMPLp, filterLT) # Employees, persons
+LHC_LT <- get_data(keyLT_LHC, filterLT) # Hourly compensation
+LCe_LT <- get_data(keyLT_LCe, filterLT) # Compensation per employee
+LPh_LT <- get_data(keyLT_LPh, filterLT)  # Labour productivity (per hours worked)
+LPp_LT <- get_data(keyLT_LPp, filterLT) # Labour productivity (per persons)
+LCEMPLa_LT <- get_data(keyLT_CEa, filterLT) # Compensation of employees, annual
 
 
 # Lietuvos kapitalas
@@ -140,6 +150,7 @@ KTC_LT <- get_data(keyLT_K07, filterLT) # GFCF Total construction (Buildings and
 KWM_LT <- get_data(keyLT_K08, filterLT) # GFCF Machinery and equipment and weapons systems
 KWO_LT <- get_data(keyLT_K09, filterLT) # GFCF Other machinery and equipment and weapons systems
 
+get_data
 finconsLT <- get_data(keyLT_2, filterLT)
 
 # </Lietuvos duomenų išgavimas>
@@ -156,7 +167,7 @@ keyPL_VA <- "MNA.Q.Y.PL.W2.S1.S1.B.B1G._Z.F._Z.EUR_R_B1GQ.V.N" # Gross value add
 keyPL_LF <- " " # Lenkijos darbo jėga
 keyPL_LPh <- "MNA.Q.Y.PL.W0.S1.S1._Z.LPR_HW._Z._T._Z.XDC.LR.N" # Labour productivity (per hours worked)
 keyPL_HC <- "MNA.Q.Y.PL.W2.S1.S1._Z.COM_HW._Z._T._Z.XDC.V.N" # Hourly compensation
-
+keyPL_CEq <- "MNA.Q.N.PL.W2.S1.S1.D.D1._Z._T._Z.XDC.V.N" # Compensation of employees, quarterly
 # Lenkijos kapitalas (nepriklausomi kintamieji)
 # visas
 keyPL_K <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N11G._T._Z.XDC.V.N" # GFCF Fixed assets by type
