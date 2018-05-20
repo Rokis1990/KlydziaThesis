@@ -77,14 +77,14 @@ key <- "ICP.M.LT+PL+U2.N.000000+XEF000.4.ANR" # hicp
 # <Lietuvos raktai>
 # Lietuvos pajamos ir gamyba (Priklausomi kintamieji)
 keyLT_GDP <- "MNA.Q.Y.LT.W2.S1.S1.B.B1GQ._Z._Z._Z.XDC.LR.N"
-keyLT_GVA <- "MNA.Q.Y.LT.W2.S1.S1.B.P3._Z._Z._Z.XDC.LR.N"
+keyLT_GVA <- "MNA.Q.Y.LT.W2.S1.S1.B.B1G._Z.F._Z.EUR_R_B1GQ.V.N" # Gross value added
 
 # Lietuvos darbas (nepriklausomi kintamieji)
 keyLT_LF <- " " # Lietuvos darbo jėga
 keyLT_LPh <- "MNA.Q.Y.LT.W0.S1.S1._Z.LPR_HW._Z._T._Z.XDC.LR.N" # Labour productivity (per hours worked)
 keyLT_LPp <- "MNA.Q.Y.LT.W0.S1.S1._Z.LPR_PS._Z._T._Z.XDC.LR.N" # Labour productivity (per persons)
-keyLT_HC <- "MNA.Q.Y.LT.W2.S1.S1._Z.COM_HW._Z._T._Z.XDC.V.N" # Hourly compensation
-keyLT_HCe <- "MNA.Q.Y.LT.W2.S1.S1._Z.COM_PS._Z._T._Z.XDC.V.N" # Compensation per employee
+keyLT_LHC <- "MNA.Q.Y.LT.W2.S1.S1._Z.COM_HW._Z._T._Z.XDC.V.N" # Hourly compensation
+keyLT_LHCe <- "MNA.Q.Y.LT.W2.S1.S1._Z.COM_PS._Z._T._Z.XDC.V.N" # Compensation per employee
 
 
 # Lietuvos kapitalas (nepriklausomi kintamieji)
@@ -121,6 +121,11 @@ GDP_LT <- get_data(keyLT_GDP, filterLT) # GDP
 GVA_LT <- get_data(keyLT_GVA, filterLT) # GVA
 
 # Lietuvos darbas
+LF_LT <- get_data()
+LHC_LT <- get_data()
+LHCe_LT <- get_data()
+LPh_LT <- get_data()
+LPp_LT <- get_data()
 
 
 # Lietuvos kapitalas
@@ -145,7 +150,7 @@ finconsLT <- get_data(keyLT_2, filterLT)
 # <Lenkija>
 # Lenkijos pajamos ir gamyba (Priklausomi kintamieji)
 keyPL_GDP <- "MNA.Q.Y.PL.W2.S1.S1.B.B1GQ._Z._Z._Z.XDC.LR.N"
-keyPL_VA <- "MNA.Q.Y.LT.W2.S1.S1.B.P3._Z._Z._Z.XDC.LR.N"
+keyPL_VA <- "MNA.Q.Y.PL.W2.S1.S1.B.B1G._Z.F._Z.EUR_R_B1GQ.V.N" # Gross value added
 
 # Lenkijos darbas (nepriklausomi kintamieji)
 keyPL_LF <- " " # Lenkijos darbo jėga
