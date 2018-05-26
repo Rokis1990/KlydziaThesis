@@ -181,19 +181,19 @@ keyPL_TEMPLh <- "MNA.Q.Y.PL.W2.S1.S1._Z.EMP._Z._T._Z.HW._Z.N" # Total employment
 keyPL_EMPLh <- "ENA.Q.Y.PL.W2.S1.S1._Z.SAL._Z._T._Z.HW._Z.N" # Employees, hourw worked
 # Lenkijos kapitalas (nepriklausomi kintamieji)
 # visas
-keyPL_K <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N11G._T._Z.XDC.V.N" # GFCF Fixed assets by type
+keyPL_K <- "MNA.Q.Y.PL.W0.S1.S1.D.P51G.N11G._T._Z.XDC.V.N" # GFCF Fixed assets by type
 
 # Lenkijos išskaidytas kapitalas (nepriklausomi kintamiji)
-keyPL_K01 <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N111G._T._Z.XDC.V.N" # GFCF Dwellings
-keyPL_K02 <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N112G._T._Z.XDC.V.N" # GFCF Other buildings and structures
-keyPL_K03 <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N1131G._T._Z.XDC.V.N" # GFCF Transport equipment
-keyPL_K04 <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N1132G._T._Z.XDC.V.N" # GFCF ICT equipment
-keyPL_K05 <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N115G._T._Z.XDC.V.N" # GFCF Cultivated biological resources
-keyPL_K06 <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N117G._T._Z.XDC.V.N" # GFCF Intellectual property
-keyPL_K07 <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N11KG._T._Z.XDC.V.N" # GFCF Total construction (Buildings and structures)
-keyPL_K08 <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N11MG._T._Z.XDC.V.N" # GFCF Machinery and equipment and weapons systems
-keyPL_K09 <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N11OG._T._Z.XDC.V.N" # GFCF Other machinery and equipment and weapons systems
-keyPL_ <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N11MG._T._Z.XDC.V.N" # GFCF Machinery and equipment and weapons systems
+keyPL_K01 <- "MNA.Q.Y.PL.W0.S1.S1.D.P51G.N111G._T._Z.XDC.V.N" # GFCF Dwellings
+keyPL_K02 <- "MNA.Q.Y.PL.W0.S1.S1.D.P51G.N112G._T._Z.XDC.V.N" # GFCF Other buildings and structures
+keyPL_K03 <- "MNA.Q.Y.PL.W0.S1.S1.D.P51G.N1131G._T._Z.XDC.V.N" # GFCF Transport equipment
+keyPL_K04 <- "MNA.Q.Y.PL.W0.S1.S1.D.P51G.N1132G._T._Z.XDC.V.N" # GFCF ICT equipment
+keyPL_K05 <- "MNA.Q.Y.PL.W0.S1.S1.D.P51G.N115G._T._Z.XDC.V.N" # GFCF Cultivated biological resources
+keyPL_K06 <- "MNA.Q.Y.PL.W0.S1.S1.D.P51G.N117G._T._Z.XDC.V.N" # GFCF Intellectual property
+keyPL_K07 <- "MNA.Q.Y.PL.W0.S1.S1.D.P51G.N11KG._T._Z.XDC.V.N" # GFCF Total construction (Buildings and structures)
+keyPL_K08 <- "MNA.Q.Y.PL.W0.S1.S1.D.P51G.N11MG._T._Z.XDC.V.N" # GFCF Machinery and equipment and weapons systems
+keyPL_K09 <- "MNA.Q.Y.PL.W0.S1.S1.D.P51G.N11OG._T._Z.XDC.V.N" # GFCF Other machinery and equipment and weapons systems
+keyPL_ <- "MNA.Q.Y.PL.W0.S1.S1.D.P51G.N11MG._T._Z.XDC.V.N" # GFCF Machinery and equipment and weapons systems
 
 # Papildomi (egzogeniniai) Lietuvos kintamieji
 # Lenkijos eksportas
