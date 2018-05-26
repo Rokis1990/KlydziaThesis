@@ -1,7 +1,6 @@
 # ecb keys
 library(ecb)
 library(ggplot2)
-install.packages("lubridate")
 library(lubridate)
 # sample key
 key <- "ICP.M.LT+PL+U2.N.000000+XEF000.4.ANR" # hicp
@@ -83,7 +82,7 @@ keyLT_GDP <- "MNA.Q.Y.LT.W2.S1.S1.B.B1GQ._Z._Z._Z.XDC.LR.N"
 keyLT_GVA <- "MNA.Q.Y.LT.W2.S1.S1.B.B1G._Z.F._Z.EUR_R_B1GQ.V.N" # Gross value added
 
 # Lietuvos darbas (nepriklausomi kintamieji)
-keyLT_LF <- " " # Lietuvos darbo jėga
+# keyLT_LF <- " " # Lietuvos darbo jėga
 keyLT_TEMPLh <- "MNA.Q.Y.LT.W2.S1.S1._Z.EMP._Z._T._Z.HW._Z.N" # Total employemnt, hours worked
 keyLT_TEMPLp <- "MNA.Q.Y.LT.W2.S1.S1._Z.EMP._Z._T._Z.PS._Z.N" # Total employment, persons
 keyLT_EMPLh <- "ENA.Q.Y.LT.W2.S1.S1._Z.SAL._Z._T._Z.HW._Z.N" # Employees, hours worked
@@ -108,7 +107,7 @@ keyLT_K06 <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N117G._T._Z.XDC.V.N" # GFCF Intellectua
 keyLT_K07 <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N11KG._T._Z.XDC.V.N" # GFCF Total construction (Buildings and structures)
 keyLT_K08 <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N11MG._T._Z.XDC.V.N" # GFCF Machinery and equipment and weapons systems
 keyLT_K09 <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N11OG._T._Z.XDC.V.N" # GFCF Other machinery and equipment and weapons systems
-keyLT_ <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N11MG._T._Z.XDC.V.N" # Gand equipment and weapons systems
+# keyLT_ <- "MNA.Q.Y.LT.W0.S1.S1.D.P51G.N11MG._T._Z.XDC.V.N" # Gand equipment and weapons systems
 
 # Papildomi (egzogeniniai) Lietuvos kintamieji
 # Lietuvos eksportas
@@ -126,17 +125,10 @@ filterLT <- list(lastNObservations = 93, detail = "full") # Lietuvos duomenys il
 # Lietuvos gamyba ir pajamos
 GDP_LT <- get_data(keyLT_GDP, filterLT)[c(24,25)] # GDP
 GVA_LT <- get_data(keyLT_GVA, filterLT)[c(21,22)] # GVA
-gdp <- ts(log(GDP_LT), start = c(1998, 2), frequency = 4)
-#apjungimas
-colnames(GDP_LT) <- c("date", "GDP_LT")
-GDP_LT
-colnames(GVA_LT) <- c("date", "GVA_LT")
-ts(GVA_LT, frequency = 4)
-dataLT <- merge(GDP_LT, GVA_LT)
-dataLT$date<-parse_date_time(dataLT$date, "y q")
-dataLT
+# gdp <- ts(log(GDP_LT), start = c(1998, 2), frequency = 4)
+
 # Lietuvos darbas
-LF_LT <- get_data()
+# LF_LT <- get_data(keyLT_LF, filterLT)
 
 #neveikia LTEMPLh_LT <- get_data(keyLT_TEMPLh, filterLT) # Total employemnt, hours worked
 #neveikia LTEMPLp_LT <- get_data(keyLT_TEMPLp, filterLT)  # Total employment, persons
@@ -145,24 +137,55 @@ LEMPLp_LT <- get_data(keyLT_EMPLp, filterLT)[c(22,23)] # Employees, persons
 LHC_LT <- get_data(keyLT_LHC, filterLT)[c(23,24)] # Hourly compensation
 LCe_LT <- get_data(keyLT_LCe, filterLT)[c(23,24)] # Compensation per employee
 LPh_LT <- get_data(keyLT_LPh, filterLT)[c(24,25)]  # Labour productivity (per hours worked)
-LPp_LT <- get_data(keyLT_LPp, filterLT) # Labour productivity (per persons)
-LCEMPLa_LT <- get_data(keyLT_CEa, filterLT) # Compensation of employees, annual
+LPp_LT <- get_data(keyLT_LPp, filterLT)[c(24,25)] # Labour productivity (per persons)
+LCEMPLa_LT <- get_data(keyLT_CEa, filterLT)[c(22,23)] # Compensation of employees, annual
 
 
 # Lietuvos kapitalas
-K_LT <- get_data(keyLT_K, filterLT)
-KDW_LT <- get_data(keyLT_K01, filterLT) # GFCF Dwellings
-KBS_LT <- get_data(keyLT_K02, filterLT) # GFCF Other buildings and structures
-KTR_LT <- get_data(keyLT_K03, filterLT) # GFCF Transport equipment
-KIT_LT <- get_data(keyLT_K04, filterLT) # GFCF ICT equipment
-KBR_LT <- get_data(keyLT_K05, filterLT) # GFCF Cultivated biological resources
-KIP_LT <- get_data(keyLT_K06, filterLT) # GFCF Intellectual property
-KTC_LT <- get_data(keyLT_K07, filterLT) # GFCF Total construction (Buildings and structures)
-KWM_LT <- get_data(keyLT_K08, filterLT) # GFCF Machinery and equipment and weapons systems
-KWO_LT <- get_data(keyLT_K09, filterLT) # GFCF Other machinery and equipment and weapons systems
+K_LT <- get_data(keyLT_K, filterLT)[c(23,24)]
+KDW_LT <- get_data(keyLT_K01, filterLT)[c(23,24)] # GFCF Dwellings
+KBS_LT <- get_data(keyLT_K02, filterLT)[c(23,24)] # GFCF Other buildings and structures
+KTR_LT <- get_data(keyLT_K03, filterLT)[c(23,24)] # GFCF Transport equipment
+KIT_LT <- get_data(keyLT_K04, filterLT)[c(23,24)] # GFCF ICT equipment
+KBR_LT <- get_data(keyLT_K05, filterLT)[c(23,24)] # GFCF Cultivated biological resources
+KIP_LT <- get_data(keyLT_K06, filterLT)[c(23,24)] # GFCF Intellectual property
+KTC_LT <- get_data(keyLT_K07, filterLT)[c(22,23)] # GFCF Total construction (Buildings and structures)
+KWM_LT <- get_data(keyLT_K08, filterLT)[c(23,24)] # GFCF Machinery and equipment and weapons systems
+KWO_LT <- get_data(keyLT_K09, filterLT)[c(23,24)] # GFCF Other machinery and equipment and weapons systems
 
 
 # </Lietuvos duomenų išgavimas>
+# <Lietuvos duomenų susistemizavimas>
+# Pervadiname stulpelius
+colnames(GDP_LT) <- c("date", "GDP_LT")
+colnames(GVA_LT) <- c("date", "GVA_LT")
+colnames(K_LT) <- c("date", "K_LT")
+colnames(KBR_LT) <- c("date", "KBR_LT")
+colnames(KBS_LT) <- c("date", "KBS_LT")
+colnames(KDW_LT) <- c("date", "KDW_LT")
+colnames(KIP_LT) <- c("date", "KIP_LT")
+colnames(KIT_LT) <- c("date", "KIT_LT")
+colnames(KTC_LT) <- c("date", "KTC_LT")
+colnames(KWM_LT) <- c("date", "KTR_LT")
+colnames(KWO_LT) <- c("date", "KWO_LT")
+colnames(LCe_LT) <- c("date", "LCe_LT")
+colnames(LCEMPLa_LT) <- c("date", "LCEMPLa")
+colnames(LEMPLh_LT) <- c("date", "LEMPLh_LT")
+colnames(LEMPLp_LT) <- c("date", "LEMPLp_LT")
+colnames(LHC_LT) <- c("date", "LHC_LT")
+colnames(LPh_LT) <- c("date", "LPh_LT")
+colnames(LPp_LT) <- c("date", "LPp_LT")
+
+# Apjungiam kintamuosius į vieną lentelę
+# išskyrus LCEMPLa_LT , nes jame metiniai duomenys
+dataLT <- merge(GDP_LT, GVA_LT, K_LT, KBR_LT, KBS_LT, KDW_LT, KIP_LT, KIT_LT, KTC_LT, KTR_LT,KWM_LT,KWO_LT,LCe_LT,LEMPLh_LT,LEMPLp_LT,LHC_LT,LPh_LT,LPp_LT)
+dataLT$date<-parse_date_time(dataLT$date, "y q")
+dataLT
+plot(dataLT)
+plot.ts(dataLT)
+ts.plot(dataLT)
+
+# </Lietuvos duomenų susistemizavimas>
 # </Lietuva>
 
 
@@ -254,10 +277,3 @@ ggplot(hicp, aes(x = obstime, y = obsvalue, color = title)) +
   labs(x = NULL, y = "Percent per annum\n", color = NULL,
        title = "HICP - headline and core\n")
 
-library(zoo)
-x <- c("Q1/13","Q2/14")
-y <- c("2011Q1", "2012Q3")
-as.Date(as.yearqtr(x, format ="Q%q/%y"))
-x
-as.Date(as.yearqtr(y, format="%Y%Q"))
-y
