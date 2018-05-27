@@ -178,12 +178,35 @@ colnames(LPp_LT) <- c("date", "LPp_LT")
 
 # Apjungiam kintamuosius į vieną lentelę
 # išskyrus LCEMPLa_LT , nes jame metiniai duomenys
-dataLT <- merge(GDP_LT, GVA_LT, K_LT, KBR_LT, KBS_LT, KDW_LT, KIP_LT, KIT_LT, KTC_LT, KTR_LT,KWM_LT,KWO_LT,LCe_LT,LEMPLh_LT,LEMPLp_LT,LHC_LT,LPh_LT,LPp_LT)
+dataLT<- merge(GDP_LT[,1:2],GVA_LT[,1:2],by=1,all=TRUE)
+dataLT<- merge(dataLT[,1:3],K_LT[,1:2],by=1,all=TRUE)
+dataLT<- merge(dataLT[,1:4],KBR_LT[,1:2],by=1,all=TRUE)
+dataLT<- merge(dataLT[,1:5],KBS_LT[,1:2],by=1,all=TRUE)
+dataLT<- merge(dataLT[,1:6],KDW_LT[,1:2],by=1,all=TRUE)
+dataLT<- merge(dataLT[,1:7],KIP_LT[,1:2],by=1,all=TRUE)
+dataLT<- merge(dataLT[,1:8],KTC_LT[,1:2],by=1,all=TRUE)
+dataLT<- merge(dataLT[,1:9],KTR_LT[,1:2],by=1,all=TRUE)
+dataLT<- merge(dataLT[,1:10],KWM_LT[,1:2],by=1,all=TRUE)
+dataLT<- merge(dataLT[,1:11],KWO_LT[,1:2],by=1,all=TRUE)
+dataLT<- merge(dataLT[,1:12],LCe_LT[,1:2],by=1,all=TRUE)
+dataLT<- merge(dataLT[,1:13],LEMPLh_LT[,1:2],by=1,all=TRUE)
+dataLT<- merge(dataLT[,1:14],LEMPLp_LT[,1:2],by=1,all=TRUE)
+dataLT<- merge(dataLT[,1:15],LHC_LT[,1:2],by=1,all=TRUE)
+dataLT<- merge(dataLT[,1:16],LPh_LT[,1:2],by=1,all=TRUE)
+dataLT<- merge(dataLT[,1:17],LPp_LT[,1:2],by=1,all=TRUE)
+
+# Datos transformavimas iš YYYY-QQ į YYYY-MM-DD
 dataLT$date<-parse_date_time(dataLT$date, "y q")
 dataLT
-plot(dataLT)
-plot.ts(dataLT)
+plot(dataLT$K_LT)
+plot(dataLT$date, dataLT$GVA_LT)
 ts.plot(dataLT)
+
+# Lietuvos duomenų įrašymas į lentelę
+write.table(dataLT, "dataLT.csv")
+write.table(dataLT, "dataLT.xls")
+write.table(dataLT, "dataLT")
+write.csv(dataLT, "dataLT.csv")
 
 # </Lietuvos duomenų susistemizavimas>
 # </Lietuva>
