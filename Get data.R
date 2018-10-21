@@ -1,5 +1,4 @@
-# Užkrauname duomenų parsisiuntimui iš Eurostat ir transformavimui reikalingus paketus
-
+# Užkrauname paketus, reikalingus duomenų parsisiuntimui iš Eurostat ir jų transformavimui
 library(eurostat)
 library(dplyr)
 library(openxlsx)
@@ -127,10 +126,12 @@ NAMQ_10_A10 <- NAMQ_10_A10 %>% filter(
 # Darbo jėga iš Darbo jėgos apklausos (tyrimo)
 
 # Duomenų filtras atrenka:
+# Amžius - nuo 15 iki 64 metų
 # Vienetai - tūkst. asmenų
 # Lytys - suma
 # Nusezoninti duomenys
 LFSI_EDUC_Q <- LFSI_EDUC_Q %>% filter(
+  age=="Y15-64",
   unit=="THS_PER",
   s_adj=="SA",
   sex=="T",
@@ -156,17 +157,31 @@ NAMQ_10_A10_E <- NAMQ_10_A10_E %>% filter(
 # Kapitalas pagal ilgalaikio turto rūšis
 
 # Duomenų filtras atrenka:
+# vienetai - Chain linked volumes 2010
+# Ilgalaikio turto rūšis - visas ilgalaikis turtas
+# Nusezoninimas - nusezoninti ir pagal kalendorių pakoreguoti duomenys
+
 NAMQ_10_AN6 <- NAMQ_10_AN6 %>% filter(
-  unit %in% c("THS_HW","THS_PER","THS_JOB"),
+  unit=="CLV10_MNAC",
   s_adj=="SCA",
-  nace_r2=="TOTAL",
-  na_item %in% c("EMP_DC","SAL_DC"),
+  asset10=="N11G",
   geo %in% c("EE", "LV","LT","PL","CZ","HU","RO")
 )
 
-#
-#
-NAMQ_10_EXI <- NAMQ_10_EXI
+
+# Tarptautinė prekyba
+
+# Duomenų filtras atrenka:
+# vienetai - Chain linked volumes 2010 nacionaline valiuta
+# nusezoninti ir pagal kalendorių pakoreguoti duomenys
+# nacionalinė sąskaita - P6 (Prekiių ir paslaugų eksportas), P7 (Prekių ir paslaugų importas)
+
+NAMQ_10_EXI <- NAMQ_10_EXI %>% filter(
+  unit=="CLV10_MNAC",
+  s_adj=="SCA",
+  na_item%in%c("P6","P7"),
+  geo %in% c("EE", "LV","LT","PL","CZ","HU","RO")
+)
 
 
 
