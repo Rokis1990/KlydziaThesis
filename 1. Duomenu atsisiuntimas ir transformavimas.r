@@ -1,7 +1,6 @@
 # Užkrauname paketus, reikalingus duomenų parsisiuntimui iš Eurostat ir jų transformavimui
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(dplyr, beepr, openxlsx, Hmisc, tabplot, data.table, tidyverse, corrplot, bit64, eurostat, xts, tidyr)
-
+pacman::p_load(dplyr, beepr, openxlsx, Hmisc, tabplot, data.table, tidyverse, corrplot, bit64, eurostat, xts, tidyr, mFilter, vars, lubridate)
 
 ##########
 # Duomenys
@@ -131,7 +130,7 @@ LFSI_EDUC_Q <- LFSI_EDUC_Q %>% filter(
   unit=="THS_PER",
   s_adj=="SA",
   sex=="T",
-    geo %in% c("EE", "LV","LT","PL","CZ","HU","RO")
+  geo %in% c("EE", "LV","LT","PL","CZ","HU","RO")
 )
 
 
@@ -142,11 +141,11 @@ LFSI_EDUC_Q <- LFSI_EDUC_Q %>% filter(
 # nusezoninti ir pagal kalendorių pakoreguoti duomenys
 # Nacionalinių sąskaitų vienetai - EMP_DC (Visas užimtumas), SAL_DC (Darbuotojai)
 NAMQ_10_A10_E <- NAMQ_10_A10_E %>% filter(
-  unit %in% c("THS_HW","THS_PER","THS_JOB"),
+  unit == "THS_HW",
   s_adj=="SCA",
-  nace_r2=="TOTAL",
-  na_item %in% c("EMP_DC","SAL_DC"),
-  geo %in% c("EE", "LV","LT","PL","CZ","HU","RO")
+  na_item == "EMP_DC",
+  geo %in% c("EE", "LV","LT","PL","CZ","HU","RO"),
+  nace_r2=="TOTAL"
 )
 
 
@@ -184,15 +183,6 @@ NAMQ_10_EXI <- NAMQ_10_EXI %>% filter(
 # Duomenų transformavimas
 #########################
 
-# tidyr
-tidyr::spread()
-tidyr::gather()
-tidyr::expand()
-tidyr::separate()
-tidyr::unite()
-
-
-
 esLFSI_EDU_Q <- spread(LFSI_EDUC_Q, geo, values)
 
 esNAMQ_10_A10 <- spread(NAMQ_10_A10, geo, values)
@@ -211,131 +201,199 @@ esNAMQ_10_GDP <- spread(NAMQ_10_GDP, geo, values)
 #esLFSI_EDU_Qtemp <- spread(esLFSI_EDU_Q,)
 #esLFSI_EDU_Q <- LFSI_EDUC_Q %>% group_by(geo) %>% dplyr::summarise(, LT=LT, PL=PL, CZ=CZ, HU=HU, RO=RO)
 
-esNAMQ_10_A10 <- NAMQ_10_A10 %>% dplyr::summarise()
+#esNAMQ_10_A10 <- NAMQ_10_A10 %>% dplyr::summarise()
 
-esNAMQ_10_A10_E <- NAMQ_10_A10_E %>% dplyr::summarise()
+#esNAMQ_10_A10_E <- NAMQ_10_A10_E %>% dplyr::summarise()
 
-esNAMQ_10_AN6 <- NAMQ_10_AN6 %>% dplyr::summarise()
+#esNAMQ_10_AN6 <- NAMQ_10_AN6 %>% dplyr::summarise()
 
-esNAMQ_10_EXI <- NAMQ_10_EXI %>% dplyr::summarise()
+#esNAMQ_10_EXI <- NAMQ_10_EXI %>% dplyr::summarise()
 
-esNAMQ_10_GDP <- NAMQ_10_GDP %>% dplyr::summarise()
+#esNAMQ_10_GDP <- NAMQ_10_GDP %>% dplyr::summarise()
 
 
 ##################
 # Duomenų lentelės
 ##################
 
-data <- as.data.frame(esNAMQ_10_A10$time)
-data$GFCF_LT <- esNAMQ_10_AN6$LT
-data$GFCF_LV <- esNAMQ_10_AN6$LV
-data$GFCF_EE <- esNAMQ_10_AN6$EE
-data$GFCF_PL <- esNAMQ_10_AN6$PL
-data$GFCF_CZ <- esNAMQ_10_AN6$CZ
-data$GFCF_HU <- esNAMQ_10_AN6$HU
-data$GFCF_RO <- esNAMQ_10_AN6$RO
-data$GDP_LT <- (esNAMQ_10_GDP %>% dplyr::filter(
+###########
+# Kapitalas
+###########
+
+#data_GFCF <- data.frame()
+data_GFCF <- as.data.frame(esNAMQ_10_A10$LT)
+data_GFCF$GFCF_LV <- esNAMQ_10_AN6$LV
+data_GFCF$GFCF_EE <- esNAMQ_10_AN6$EE
+data_GFCF$GFCF_PL <- esNAMQ_10_AN6$PL
+data_GFCF$GFCF_CZ <- esNAMQ_10_AN6$CZ
+data_GFCF$GFCF_HU <- esNAMQ_10_AN6$HU
+data_GFCF$GFCF_RO <- esNAMQ_10_AN6$RO 
+#data_GFCF$time <- esNAMQ_10_AN6$time # pridedame datos stulpelį
+
+
+data_L_GFCF <- as.data.frame(lapply(data_GFCF, log))
+
+data_K <- cbind(data_GFCF, data_L_GFCF)
+
+data_DL_GFCF <- as.data.frame(lapply(data_L_GFCF, diff))
+names(data_DL_GFCF) <- c("DL_GFCF_LT","DL_GFCF_LV","DL_GFCF_EE","DL_GFCF_PL","DL_GFCF_CZ","DL_GFCF_HU","DL_GFCF_RO")
+names(data_K) <- c("GFCF_LT","GFCF_LV","GFCF_EE","GFCF_PL","GFCF_CZ","GFCF_HU","GFCF_RO","L_GFCF_LT","L_GFCF_LV","L_GFCF_EE","L_GFCF_PL","L_GFCF_CZ","L_GFCF_HU","L_GFCF_RO")
+
+data_K <- cbind(data_K, data_DL_GFCF)
+
+time93 <- esNAMQ_10_AN6[-nrow(esNAMQ_10_AN6),] 
+data_K$time <- esNAMQ_10_AN6$time # pridedame datos stulpelį
+data_DL_GFCF$time <- time93$time # pridedame datos stulpelį
+
+data_K <- left_join(data_K, data_DL_GFCF, by="time")
+
+
+#require(reshape2)
+#data_a$id <- rownames(data_a) 
+#melt(data_a)
+
+#####
+# BVP
+#####
+data_GDP <- data.frame()
+
+time_GDP <- as.data.frame(unique(esNAMQ_10_GDP$time))
+data_GDP <- as.data.frame((esNAMQ_10_GDP %>% dplyr::filter(
   na_item=="B1GQ"
-))$LT
-data$GDP_LV <- (esNAMQ_10_GDP %>% dplyr::filter(
+))$LT)
+data_GDP$GDP_LV <- (esNAMQ_10_GDP %>% dplyr::filter(
   na_item=="B1GQ"
 ))$LV
-data$GDP_EE <- (esNAMQ_10_GDP %>% dplyr::filter(
+data_GDP$GDP_EE <- (esNAMQ_10_GDP %>% dplyr::filter(
   na_item=="B1GQ"
 ))$EE
-data$GDP_PL <- (esNAMQ_10_GDP %>% dplyr::filter(
+data_GDP$GDP_PL <- (esNAMQ_10_GDP %>% dplyr::filter(
   na_item=="B1GQ"
 ))$PL
-data$GDP_CZ <- (esNAMQ_10_GDP %>% dplyr::filter(
+data_GDP$GDP_CZ <- (esNAMQ_10_GDP %>% dplyr::filter(
   na_item=="B1GQ"
 ))$CZ
-data$GDP_HU <- (esNAMQ_10_GDP %>% dplyr::filter(
+data_GDP$GDP_HU <- (esNAMQ_10_GDP %>% dplyr::filter(
   na_item=="B1GQ"
 ))$HU
-data$GDP_RO <- (esNAMQ_10_GDP %>% dplyr::filter(
+data_GDP$GDP_RO <- (esNAMQ_10_GDP %>% dplyr::filter(
   na_item=="B1GQ"
 ))$RO
+
+
+data_L_GDP <- as.data.frame(lapply(data_GDP, log))
+
+data_DL_GDP <- as.data.frame(lapply(data_L_GDP, diff))
+  
+data_GDP$time <- time_GDP$`unique(esNAMQ_10_GDP$time)`
+
+data_L_GDP$time <- time_GDP$`unique(esNAMQ_10_GDP$time)`
+
+time94 <- esNAMQ_10_AN6[-nrow(esNAMQ_10_AN6),] 
+
+data_DL_GDP$time <- esNAMQ_10_AN6$time
+
+names(data_GDP) <- c("GDP_LT","GDP_LV","GDP_EE","GDP_PL","GDP_CZ","GDP_HU","GDP_RO","time")
+
+names(data_L_GDP) <- c("L_GDP_LT","L_GDP_LV","L_GDP_EE","L_GDP_PL","L_GDP_CZ","L_GDP_HU","L_GDP_RO","time")
+
+names(data_DL_GDP) <- c("DL_GDP_LT","DL_GDP_LV","DL_GDP_EE","DL_GDP_PL","DL_GDP_CZ","DL_GDP_HU","DL_GDP_RO", "time")
+
+data_Y <- left_join(data_GDP, data_L_GDP, by="time")
+
+data_Y <- left_join(data_Y, data_DL_GDP, by="time")
+
+#####################
+# Darbo jėga
+#####################
+
+#####
+# Nudirbtos valandos, visi dirbantieji (ne tik samdomi darbuotojai)
+#####
+
+data_HW$HW_LT <- esNAMQ_10_A10_E$LT
+data_HW$HW_LV <- esNAMQ_10_A10_E$LV
+data_HW$HW_EE <- esNAMQ_10_A10_E$EE
+data_HW$HW_PL <- esNAMQ_10_A10_E$PL
+data_HW$HW_CZ <- esNAMQ_10_A10_E$CZ
+data_HW$HW_HU <- esNAMQ_10_A10_E$HU
+data_HW$HW_RO <- esNAMQ_10_A10_E$RO
+
+#####################################
+# Duomenų lentelių apjungimas
+#####################################
+
+
+names(data)[1] <- "time"
+names(data2)[1] <- "time"
+data_prod <- dplyr::left_join(data2, data, by = "time")
+
+boxplot(data_prod)
+mosaicplot(data_prod$GDP_CZ ~ data_prod$GFCF_CZ)
+mosaicplot(data_prod$GDP_LT ~ data_prod$HW_LT)
+
+par(mfrow=c(1,2))
+plot(data_prod$GDP_LT, data_prod$GFCF_LT)
+title("LT BVP")
+plot(data_prod$GDP_LT, data_prod$GFCF_LT, log="xy")
+title("LT BVP log-log skalė")
 
 ####
 # Skiriasi eiluciu skaicius - LFS 84 eilutes
 ####
 
-data$LF02_LT <- (esLFSI_EDU_Q %>% dplyr::filter(
+# LFS darbo jėgos duomenys - skiriasi dimensijos
+data_LF <- 
+data_LF$LF02_LT <- (esLFSI_EDU_Q %>% dplyr::filter(
   isced11=="ED0-2"
 ))$LT
-data$LF02_LV <- (esLFSI_EDU_Q %>% dplyr::filter(
+data_LF$LF02_LV <- (esLFSI_EDU_Q %>% dplyr::filter(
   isced11=="ED0-2"
 ))$LV
-data$LF02_EE <- (esLFSI_EDU_Q %>% dplyr::filter(
+data_LF$LF02_EE <- (esLFSI_EDU_Q %>% dplyr::filter(
   isced11=="ED0-2"
 ))$EE
-data$LF02_PL <- (esLFSI_EDU_Q %>% dplyr::filter(
+data_LF$LF02_PL <- (esLFSI_EDU_Q %>% dplyr::filter(
   isced11=="ED0-2"
 ))$PL
-data$LF02_CZ <- (esLFSI_EDU_Q %>% dplyr::filter(
+data_LF$LF02_CZ <- (esLFSI_EDU_Q %>% dplyr::filter(
   isced11=="ED0-2"
 ))$CZ
-data$LF02_HU <- (esLFSI_EDU_Q %>% dplyr::filter(
+data_LF$LF02_HU <- (esLFSI_EDU_Q %>% dplyr::filter(
   isced11=="ED0-2"
 ))$HU
-data$LF02_RO <- (esLFSI_EDU_Q %>% dplyr::filter(
+data_LF$LF02_RO <- (esLFSI_EDU_Q %>% dplyr::filter(
   isced11=="ED0-2"
 ))$RO
 ######
 # Darbo jegos kintamasis is NAMQ
 ######
-data$HW_LT <- (esNAMQ_10_A10_E %>% dplyr::filter(
+data_HW$HW_LT <- (esNAMQ_10_A10_E %>% dplyr::filter(
   unit=="THS_HW",
   na_item=="EMP_DC"
 ))$LT
-data$HW_LV <- (esNAMQ_10_A10_E %>% dplyr::filter(
+data_HW$HW_LV <- (esNAMQ_10_A10_E %>% dplyr::filter(
   unit=="THS_HW",
   na_item=="EMP_DC"
 ))$LV
-data$HW_EE <- (esNAMQ_10_A10_E %>% dplyr::filter(
+data_HW$HW_EE <- (esNAMQ_10_A10_E %>% dplyr::filter(
   unit=="THS_HW",
   na_item=="EMP_DC"
 ))$EE
-data$HW_PL <- (esNAMQ_10_A10_E %>% dplyr::filter(
+data_HW$HW_PL <- (esNAMQ_10_A10_E %>% dplyr::filter(
   unit=="THS_HW",
   na_item=="EMP_DC"
 ))$PL
-data$HW_CZ <- (esNAMQ_10_A10_E %>% dplyr::filter(
+data_HW$HW_CZ <- (esNAMQ_10_A10_E %>% dplyr::filter(
   unit=="THS_HW",
   na_item=="EMP_DC"
 ))$CZ
-data$HW_HU <- (esNAMQ_10_A10_E %>% dplyr::filter(
+data_HW$HW_HU <- (esNAMQ_10_A10_E %>% dplyr::filter(
   unit=="THS_HW",
   na_item=="EMP_DC"
 ))$HU
-data$HW_RO <- (esNAMQ_10_A10_E %>% dplyr::filter(
+data_HW$HW_RO <- (esNAMQ_10_A10_E %>% dplyr::filter(
   unit=="THS_HW",
   na_item=="EMP_DC"
 ))$RO
 
-
-
-
-
-###
-K <- NAMQ_10_GDP %>% filter(
-  na_item=="B1GQ"
-)
-K$unit <- NULL
-K$s_adj <- NULL
-K$na_item <- NULL
-
-plot.ts(K$values)
-
-unique(NAMQ_10_GDP$na_item)
-L <- NAMQ_10_GDP %>% filter(
-  na_item=="D11"
-)
-
-
-L <- NAMQ_10_A10_E %>% filter(
-  na_item=="EMP_DC",
-  unit=="THS_HW"
-)
-
-plot.ts(L$values)
