@@ -344,6 +344,10 @@ title("LT BVP log-log skalė")
 
 ts.plot(data, col = 1:7, xlab = "Year", ylab = "Index Value", main = "Central Eastern European countries 1998-2018")
 
+# Rolling window ts funkcija
+rollapply(data_prod, width=3, FUN = sd)
+
+
 # LFS darbo jėgos duomenys - skiriasi dimensijos
 data_LF <- 
 data_LF$LF02_LT <- (esLFSI_EDU_Q %>% dplyr::filter(
