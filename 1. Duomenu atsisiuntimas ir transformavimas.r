@@ -293,6 +293,8 @@ time94 <- esNAMQ_10_AN6[-nrow(esNAMQ_10_AN6),]
 
 data_DL_GDP$time <- esNAMQ_10_AN6$time
 
+data_DL_GDP$time <- time94$time
+
 names(data_GDP) <- c("GDP_LT","GDP_LV","GDP_EE","GDP_PL","GDP_CZ","GDP_HU","GDP_RO","time")
 
 names(data_L_GDP) <- c("L_GDP_LT","L_GDP_LV","L_GDP_EE","L_GDP_PL","L_GDP_CZ","L_GDP_HU","L_GDP_RO","time")
@@ -311,7 +313,7 @@ data_Y <- left_join(data_Y, data_DL_GDP, by="time")
 # Nudirbtos valandos, visi dirbantieji (ne tik samdomi darbuotojai)
 #####
 
-data_HW$HW_LT <- esNAMQ_10_A10_E$LT
+data_HW <- as.data.frame(esNAMQ_10_A10_E$LT)
 data_HW$HW_LV <- esNAMQ_10_A10_E$LV
 data_HW$HW_EE <- esNAMQ_10_A10_E$EE
 data_HW$HW_PL <- esNAMQ_10_A10_E$PL
@@ -319,14 +321,29 @@ data_HW$HW_CZ <- esNAMQ_10_A10_E$CZ
 data_HW$HW_HU <- esNAMQ_10_A10_E$HU
 data_HW$HW_RO <- esNAMQ_10_A10_E$RO
 
+data_L_HW <- as.data.frame(lapply(data_HW, log))
+
+data_DL_HW <- as.data.frame(lapply(data_L_HW, diff))
+
+data_HW$time <- esNAMQ_10_A10_E$time
+
+data_L_HW$time <- esNAMQ_10_A10_E$time
+
+data_DL_HW$time <- time93$time
+
+data_L <- left_join(data_HW, data_L_HW, by="time")
+
+data_L <- left_join(data_L, data_DL_HW, by="time")
+
+names(data_L) <- c("HW_LT","HW_LV","HW_EE","HW_PL","HW_CZ","HW_HU","HW_RO", "time","L_HW_LT","L_HW_LV","L_HW_EE","L_HW_PL","L_HW_CZ","L_HW_HU","L_HW_RO","DL_HW_LT","DL_HW_LV","DL_HW_EE","DL_HW_PL","DL_HW_CZ","DL_HW_HU","DL_HW_RO")
+
 #####################################
 # Duomenų lentelių apjungimas
 #####################################
 
 
-names(data)[1] <- "time"
-names(data2)[1] <- "time"
-data_prod <- dplyr::left_join(data2, data, by = "time")
+data_prod <- dplyr::left_join(data_Y, data_K, by = "time")
+data_prod <- dplyr::left_join(data_prod, data_L, by="time")
 
 boxplot(data_prod)
 mosaicplot(data_prod$GDP_CZ ~ data_prod$GFCF_CZ)
@@ -341,12 +358,6 @@ title("LT BVP log-log skalė")
 ####
 # Skiriasi eiluciu skaicius - LFS 84 eilutes
 ####
-
-ts.plot(data, col = 1:7, xlab = "Year", ylab = "Index Value", main = "Central Eastern European countries 1998-2018")
-
-# Rolling window ts funkcija
-rollapply(data_prod, width=3, FUN = sd)
-
 
 # LFS darbo jėgos duomenys - skiriasi dimensijos
 data_LF <- 
