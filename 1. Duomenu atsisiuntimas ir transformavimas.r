@@ -326,6 +326,7 @@ data_Y <- left_join(data_Y, data_DL_GDP, by="time")
 # Nudirbtos valandos, visi dirbantieji (ne tik samdomi darbuotojai)
 #####
 
+# Sukuriame nudirbtų valandų pagal EVRK duomenų objektą
 data_HW <- as.data.frame(esNAMQ_10_A10_E$LT)
 data_HW$HW_LV <- esNAMQ_10_A10_E$LV
 data_HW$HW_EE <- esNAMQ_10_A10_E$EE
@@ -334,27 +335,35 @@ data_HW$HW_CZ <- esNAMQ_10_A10_E$CZ
 data_HW$HW_HU <- esNAMQ_10_A10_E$HU
 data_HW$HW_RO <- esNAMQ_10_A10_E$RO
 
+#  Logaritmuojame nudirbtas valandas
 data_L_HW <- as.data.frame(lapply(data_HW, log))
 
+# diferencijuojame logaritmuotas darbo valandas
 data_DL_HW <- as.data.frame(lapply(data_L_HW, diff))
 
+# Prijungiame laiko (datos) stulpelį prie darbo valandų duomenų objekto
 data_HW$time <- esNAMQ_10_A10_E$time
 
+# Prijungiame laiko (datos) stulpelį prie logaritmuotų darbo valandų duomenų objekto
 data_L_HW$time <- esNAMQ_10_A10_E$time
 
-data_DL_HW$time <- time93$time
+# Prijungiame laiko (datos) stulpelį prie diferencijuotų ir logaritmuotų darbo valandų duomenų objekto
+data_DL_HW$time <- time94$time
 
+# Apjungiame nudirbtų valandų ir logaritmuotų nudirbtų valandų duomenų obejktus
 data_L <- left_join(data_HW, data_L_HW, by="time")
 
+# Apjungiame HW, log(HW) ir diff(log(HW)) duomenų objektus
 data_L <- left_join(data_L, data_DL_HW, by="time")
 
+# Pervadiname apjungto nudirbtų valandų duomenų objekto stulpelius
 names(data_L) <- c("HW_LT","HW_LV","HW_EE","HW_PL","HW_CZ","HW_HU","HW_RO", "time","L_HW_LT","L_HW_LV","L_HW_EE","L_HW_PL","L_HW_CZ","L_HW_HU","L_HW_RO","DL_HW_LT","DL_HW_LV","DL_HW_EE","DL_HW_PL","DL_HW_CZ","DL_HW_HU","DL_HW_RO")
 
 #####################################
 # Duomenų lentelių apjungimas
 #####################################
 
-
+# Apjungiame BVP, Kapitalo (GFCF) ir darbo valandų (HW) duomenis
 data_prod <- dplyr::left_join(data_Y, data_K, by = "time")
 data_prod <- dplyr::left_join(data_prod, data_L, by="time")
 
@@ -368,9 +377,9 @@ title("LT BVP")
 plot(data_prod$GDP_LT, data_prod$GFCF_LT, log="xy")
 title("LT BVP log-log skalė")
 
-####
+#############################
 # Skiriasi eiluciu skaicius - LFS 84 eilutes
-####
+#############################
 
 # LFS darbo jėgos duomenys - skiriasi dimensijos
 data_LF <- 
@@ -395,9 +404,11 @@ data_LF$LF02_HU <- (esLFSI_EDU_Q %>% dplyr::filter(
 data_LF$LF02_RO <- (esLFSI_EDU_Q %>% dplyr::filter(
   isced11=="ED0-2"
 ))$RO
-######
-# Darbo jegos kintamasis is NAMQ
-######
+
+########################
+# Darbo jegos kintamasis iš NAMQ
+########################
+
 data_HW$HW_LT <- (esNAMQ_10_A10_E %>% dplyr::filter(
   unit=="THS_HW",
   na_item=="EMP_DC"
