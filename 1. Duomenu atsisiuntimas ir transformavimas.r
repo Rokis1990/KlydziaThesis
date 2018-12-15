@@ -230,21 +230,25 @@ data_GFCF$GFCF_HU <- esNAMQ_10_AN6$HU
 data_GFCF$GFCF_RO <- esNAMQ_10_AN6$RO 
 #data_GFCF$time <- esNAMQ_10_AN6$time # pridedame datos stulpelį
 
-
+# Logaritmuojame GFCF duomenis
 data_L_GFCF <- as.data.frame(lapply(data_GFCF, log))
 
+# Apjungiame GFCF su logaritmuotais GFCF
 data_K <- cbind(data_GFCF, data_L_GFCF)
 
+# Diferencijuojame logaritmuotus GFCF duomenis
 data_DL_GFCF <- as.data.frame(lapply(data_L_GFCF, diff))
+
+# Pervadiname kapitalo duomenų stulpelius
 names(data_DL_GFCF) <- c("DL_GFCF_LT","DL_GFCF_LV","DL_GFCF_EE","DL_GFCF_PL","DL_GFCF_CZ","DL_GFCF_HU","DL_GFCF_RO")
 names(data_K) <- c("GFCF_LT","GFCF_LV","GFCF_EE","GFCF_PL","GFCF_CZ","GFCF_HU","GFCF_RO","L_GFCF_LT","L_GFCF_LV","L_GFCF_EE","L_GFCF_PL","L_GFCF_CZ","L_GFCF_HU","L_GFCF_RO")
 
-data_K <- cbind(data_K, data_DL_GFCF)
-
+# Sukuriame trumpesnį viena eilute laiko (datos) kintamąjį diferencijuotiems duomenims  
 time93 <- esNAMQ_10_AN6[-nrow(esNAMQ_10_AN6),] 
 data_K$time <- esNAMQ_10_AN6$time # pridedame datos stulpelį
-data_DL_GFCF$time <- time93$time # pridedame datos stulpelį
+data_DL_GFCF$time <- time93$time # pridedame trumpesnį datos stulpelį
 
+# Apjungiame GFCF ir L_GFCF su DL_GFCF
 data_K <- left_join(data_K, data_DL_GFCF, by="time")
 
 
@@ -255,9 +259,14 @@ data_K <- left_join(data_K, data_DL_GFCF, by="time")
 #####
 # BVP
 #####
+
+# Sukuriame BVP duomenų objektą
 data_GDP <- data.frame()
 
+# sukuriame BVP laiko (datos) duomenų objektą
 time_GDP <- as.data.frame(unique(esNAMQ_10_GDP$time))
+
+# Prijungiame 7 šalių BVP duomenis
 data_GDP <- as.data.frame((esNAMQ_10_GDP %>% dplyr::filter(
   na_item=="B1GQ"
 ))$LT)
@@ -280,29 +289,33 @@ data_GDP$GDP_RO <- (esNAMQ_10_GDP %>% dplyr::filter(
   na_item=="B1GQ"
 ))$RO
 
-
+# Logaritmuojame BVP
 data_L_GDP <- as.data.frame(lapply(data_GDP, log))
 
+# Diferencijuojame logaritmuotus BVP duomenis
 data_DL_GDP <- as.data.frame(lapply(data_L_GDP, diff))
-  
+
+# Prijungiame laiko (datos) stulpelį prie BVP duomenų
 data_GDP$time <- time_GDP$`unique(esNAMQ_10_GDP$time)`
 
+# Prijungiame laiko (datos) stulpelį prie log(BVP) duomenų
 data_L_GDP$time <- time_GDP$`unique(esNAMQ_10_GDP$time)`
 
+# Sukuriame laiko duomenų objektą, trumpesnį viena eilute, nei yra BVP matavimų 
 time94 <- esNAMQ_10_AN6[-nrow(esNAMQ_10_AN6),] 
 
-data_DL_GDP$time <- esNAMQ_10_AN6$time
-
+# Prijungiame lako (datos) stulpelį prie diferencijuotų ir logaritmuotų BVP duomenų
 data_DL_GDP$time <- time94$time
 
+# Pervadiname BVP duomenų stulpelius
 names(data_GDP) <- c("GDP_LT","GDP_LV","GDP_EE","GDP_PL","GDP_CZ","GDP_HU","GDP_RO","time")
-
 names(data_L_GDP) <- c("L_GDP_LT","L_GDP_LV","L_GDP_EE","L_GDP_PL","L_GDP_CZ","L_GDP_HU","L_GDP_RO","time")
-
 names(data_DL_GDP) <- c("DL_GDP_LT","DL_GDP_LV","DL_GDP_EE","DL_GDP_PL","DL_GDP_CZ","DL_GDP_HU","DL_GDP_RO", "time")
 
+# Apjungiame BVP ir log(BVP) duomenis
 data_Y <- left_join(data_GDP, data_L_GDP, by="time")
 
+# Apjungiame BVP, log(BVP) ir diff(log(BVP))
 data_Y <- left_join(data_Y, data_DL_GDP, by="time")
 
 #####################
@@ -361,9 +374,9 @@ title("LT BVP log-log skalė")
 
 # LFS darbo jėgos duomenys - skiriasi dimensijos
 data_LF <- 
-data_LF$LF02_LT <- (esLFSI_EDU_Q %>% dplyr::filter(
-  isced11=="ED0-2"
-))$LT
+  data_LF$LF02_LT <- (esLFSI_EDU_Q %>% dplyr::filter(
+    isced11=="ED0-2"
+  ))$LT
 data_LF$LF02_LV <- (esLFSI_EDU_Q %>% dplyr::filter(
   isced11=="ED0-2"
 ))$LV
@@ -413,4 +426,3 @@ data_HW$HW_RO <- (esNAMQ_10_A10_E %>% dplyr::filter(
   unit=="THS_HW",
   na_item=="EMP_DC"
 ))$RO
-
