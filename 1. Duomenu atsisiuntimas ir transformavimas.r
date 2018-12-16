@@ -367,6 +367,9 @@ names(data_L) <- c("HW_LT","HW_LV","HW_EE","HW_PL","HW_CZ","HW_HU","HW_RO", "tim
 data_prod <- dplyr::left_join(data_Y, data_K, by = "time")
 data_prod <- dplyr::left_join(data_prod, data_L, by="time")
 
+# įrašome apjungtą duomenų lentelę į .xslx failą
+write.xlsx(data_prod, file="data_prod.xlsx")
+
 boxplot(data_prod)
 mosaicplot(data_prod$GDP_CZ ~ data_prod$GFCF_CZ)
 mosaicplot(data_prod$GDP_LT ~ data_prod$HW_LT)
