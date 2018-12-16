@@ -1,5 +1,5 @@
 # KlydziaThesis
-This is the repository of R scripts that I use to make econometric models for my Master's thesis in economics. 
+This is the repository of R scripts that I use to make econometric models for my upcoming Master's thesis in economics. 
 
 For downloading R please visit https://cran.r-project.org/
 
