@@ -2,29 +2,38 @@
 # Estijos gamybos spraga
 ######################################
 
-# Rekursinis gamybos spragos suradimas hp filtro pagalba
+### Rekursinis gamybos spragos suradimas hp filtro pagalba
+# Paverčiame Estijos BVP duomenis laiko eilutėmis
 L_GDP_EE <- with(data_prod, ts(log(GDP_EE), start = c(1995, 1), frequency = 4))
+
+# 
 n <- length(L_GDP_EE)
 k <- 12
-# HPFilter su trendu
+### HPFilter su trendu
+# Apskaičiuojame potencialų Estijos BVP, naudodami Hodrick-Prescott filtrą
 POT_L_GDP_EE <- c(hpfilter(L_GDP_EE[1:k], freq = 1600, drift = FALSE)$trend, rep(NA, n - k))
+# Rekursyviniu būdu surandame potencialų BVP
 for (i in (k + 1):n) {
   POT_L_GDP_EE[i] <- tail(hpfilter(L_GDP_EE[1:i], freq = 1600)$trend, 1)
 }
 POT_L_GDP_EE <- ts(POT_L_GDP_EE, start = c(1995, 1), frequency = 4)
 ts.plot(L_GDP_EE)
 lines(POT_L_GDP_EE, col = "blue")
+
+# Apskaičiuojame gamybos spragą
 L_GDP_GAP_EE <- (L_GDP_EE - POT_L_GDP_EE)*100
 ts.plot(L_GDP_GAP_EE)
-# Redukuotos formos VAR'o įvertinimas
-data_ee <- data.frame(diff(with(data_prod, cbind(L_GDP_GAP_EE, log(HW_EE), log(GFCF_EE)))))
+
+### Redukuotos formos VAR'o įvertinimas
+# Apjungiame duomenis analizei
+data_ee <- data.frame(diff(with(data_prod, cbind(L_GDP_GAP_EE, L_HW_EE, L_GFCF_EE))))
 ts.plot(data_ee)
 plot.ts(data_ee)
 
 # Skirtingos dimensijos. Reikia ištrinti eilutes, kuriose yra NA
 # Išmetame pirmas 20 eilučių, kurioms neturime darbo kintamojo
 #data_ee <- data_ee[-1:-20,]
-data_ee <- data_ee[!is.na(data_ee$log.HW_EE),];beep()
+data_ee <- data_ee[!is.na(data_ee$L_HW_EE),];beep()
 plot.ts(data_ee)
 ts.plot(data_ee)
 # data_ee$log.HW_EE. <- diff(data_ee$log.HW_EE.)
