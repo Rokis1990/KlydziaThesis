@@ -380,6 +380,18 @@ title("LT BVP")
 plot(data_prod$GDP_LT, data_prod$GFCF_LT, log="xy")
 title("LT BVP log-log skalė")
 
+##############################################
+# Pašaliname nebereikalingus duomenų objektus
+##############################################
+
+rm(time93, NAMQ_10_GDP, NAMQ_10_AN6, NAMQ_10_A10_E,
+   NAMQ_10_A10, LFSI_EDUC_Q, data_DL_GDP, data_DL_GFCF, 
+   data_DL_HW, data_L_GDP, data_L_GFCF, data_L_HW, data_GDP, 
+   data_GFCF, data_HW)
+
+
+
+
 #############################
 # Skiriasi eiluciu skaicius - LFS 84 eilutes
 #############################
