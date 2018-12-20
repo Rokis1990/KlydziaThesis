@@ -362,6 +362,143 @@ plot(irf(bq_svar_lt))
 irf(bq_svar_lt, boot = FALSE)
 fevd(bq_svar_lt)
 
+######################################
+# Lenkijos gamybos spraga
+######################################
+
+### Rekursinis gamybos spragos suradimas hp filtro pagalba
+# Paverčiame Lenkijos BVP duomenis laiko eilutėmis
+L_GDP_PL <- with(data_prod, ts(log(GDP_PL), start = c(1995, 1), frequency = 4))
+
+# 
+n <- length(L_GDP_PL)
+k <- 12
+### HPFilter su trendu
+# Apskaičiuojame potencialų Lenkijos BVP, naudodami Hodrick-Prescott filtrą
+POT_L_GDP_PL <- c(hpfilter(L_GDP_PL[1:k], freq = 1600, drift = FALSE)$trend, rep(NA, n - k))
+# Rekursyviniu būdu surandame potencialų BVP
+for (i in (k + 1):n) {
+  POT_L_GDP_PL[i] <- tail(hpfilter(L_GDP_PL[1:i], freq = 1600)$trend, 1)
+}
+POT_L_GDP_PL <- ts(POT_L_GDP_PL, start = c(1995, 1), frequency = 4)
+ts.plot(L_GDP_PL)
+lines(POT_L_GDP_PL, col = "blue")
+
+# Apskaičiuojame gamybos spragą
+L_GDP_GAP_PL <- (L_GDP_PL - POT_L_GDP_PL)*100
+ts.plot(L_GDP_GAP_PL)
+
+### Redukuotos formos VAR'o įvertinimas
+# Apjungiame duomenis analizei
+data_pl <- data.frame(diff(with(data_prod, cbind(L_GDP_GAP_PL, L_HW_PL, L_GFCF_PL))))
+names(data_pl) <- c("DL_GDP_GAP_PL", "DL_HW_PL", "DL_GFCF_PL")
+ts.plot(data_pl)
+plot.ts(data_pl)
+
+# Skirtingos dimensijos. Reikia ištrinti eilutes, kuriose yra NA
+# Išmetame pirmas 20 eilučių, kurioms neturime darbo kintamojo
+#data_ee <- data_ee[-1:-20,]
+data_pl <- data_pl[!is.na(data_pl$DL_HW_PL),];beep()
+data_pl <- data_pl[!is.na(data_pl$DL_GFCF_PL),];beep()
+plot.ts(data_pl)
+ts.plot(data_pl)
+# data_ee$log.HW_EE. <- diff(data_ee$log.HW_EE.)
+
+
+VARselect(data_pl, lag.max = 8)
+var_pl <- VAR(data_pl, p = 4)
+summary(var_pl)
+acf(residuals(var_pl))
+# Paklaidų normališkumo testas
+normality.test(var_pl, multivariate.only = FALSE)
+# Daugiamatis Grangerio priežastingumo testas
+causality(var_pl, cause = "DL_GDP_GAP_PL")
+causality(var_pl, cause = "DL_HW_PL")
+causality(var_pl, cause = "DL_GFCF_PL")
+# Pirmas porinis Grangerio priežastingumo testas
+data_pl1 <- data.frame(with(data_prod, cbind(L_GDP_GAP_PL, DL_HW_PL)))
+# ištriname eilutes, kuriose trūksta duomenų
+data_pl1 <- data_pl1[!is.na(data_pl1$DL_HW_PL),];beep()
+#
+var_pl1 <- VAR(data_pl1, p = 4)
+summary(var_pl1)
+acf(residuals(var_lv1))
+Box.test(residuals(var_pl1)[, 2], lag = 8, type = "Ljung-Box")
+causality(var_pl1, cause = "L_GDP_GAP_PL")
+causality(var_pl1, cause = "DL_HW_PL")
+# Antras porinis Grangerio priežastingumo testas
+data_pl2 <- data.frame(with(data_prod, cbind(L_GDP_GAP_PL, DL_GFCF_PL)))
+# Ištriname eilutes, kuriose trūksta duomenų
+data_pl2 <- data_pl2[!is.na(data_pl2$DL_GFCF_PL),];beep()
+
+var_pl2 <- VAR(data_pl2, p = 4)
+summary(var_pl2)
+acf(residuals(var_pl2))
+Box.test(residuals(var_pl2)[, 2], lag = 8, type = "Ljung-Box")
+causality(var_pl2, cause = "L_GDP_GAP_PL")
+causality(var_pl2, cause = "DL_GFCF_PL")
+# Trečias porinis Grangerio priežastingumo testas
+data_pl3 <- data.frame(with(data_prod, cbind(DL_HW_PL, DL_GFCF_PL)))
+# Ištriname eilutes, kuriose trūksta duomenų
+data_pl3 <- data_pl3[!is.na(data_pl3$DL_HW_PL),];beep()
+data_pl3 <- data_pl3[!is.na(data_pl3$DL_GFCF_PL),];beep()
+var_pl3 <- VAR(data_pl3, p = 4)
+summary(var_pl3)
+acf(residuals(var_pl3))
+Box.test(residuals(var_pl3)[, 2], lag = 8, type = "Ljung-Box")
+causality(var_pl3, cause = "DL_HW_PL")
+causality(var_pl3, cause = "DL_GFCF_PL")
+# Struktūrinio A tipo SVAR'o įvertinimas
+AM
+svar_pl <- SVAR(var_pl, estmethod = "direct", Amat = AM, 
+                method = "BFGS", hessian = TRUE)
+svar_pl
+svar_pl$A/svar_pl$Ase
+plot(irf(svar_pl))
+irf(svar_pl, boot = FALSE)
+fevd(svar_pl)
+
+# Gamybos spraga. Cycle
+y_gap_pl <- with(data_prod, hpfilter(L_GDP_PL, freq = 1600)$cycle*100)
+ts.plot(y_gap_pl)
+ts.plot(L_GDP_PL)
+# Potencialus BVP iš mechaninio ex post 
+y_pot_pl <- ts(hpfilter(L_GDP_PL, freq = 1600)$trend, start = c(1995, 1), frequency = 4)
+lines(y_pot_pl, col = "blue")
+# Redukuotos formos VAR'o įvertinimas
+data_pl22 <- data.frame(with(data_prod, cbind(DL_GFCF_PL, DL_HW_PL, y_gap_pl)))
+plot.ts(data_pl22)
+# Ištriname eilutes, kuriose trūksta duomenų
+data_pl22 <- data_pl22[!is.na(data_pl22$DL_GFCF_PL),];beep()
+data_pl22 <- data_pl22[!is.na(data_pl22$DL_HW_PL),];beep()
+# data_lv22 <- data_lv22[!is.na(data_lv22$DL_HW_LV),];beep()
+plot.ts(data_pl22)
+VARselect(data_pl22, lag.max = 8)
+var_pl22 <- VAR(data_pl22, p = 5)
+summary(var_pl22)
+acf(residuals(var_pl22))
+# Blanchardo-Quah SVAR'o įvertinimas
+bq_svar_pl <- BQ(var_pl22)
+bq_svar_pl
+plot(irf(bq_svar_pl))
+irf(bq_svar_pl, boot = FALSE)
+fevd(bq_svar_pl)
+
+# Čekija 
+
+# Vengrija
+
+# Rumunija
+
+
+
+###########################################################
+###########################################################
+### REDUNDANT
+###########################################################
+###########################################################
+
+
 ########################################
 # Latvijos gamybos spraga
 ########################################
