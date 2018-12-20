@@ -27,13 +27,14 @@ ts.plot(L_GDP_GAP_EE)
 ### Redukuotos formos VAR'o įvertinimas
 # Apjungiame duomenis analizei
 data_ee <- data.frame(diff(with(data_prod, cbind(L_GDP_GAP_EE, L_HW_EE, L_GFCF_EE))))
+names(data_ee) <- c("DL_GDP_GAP_EE", "DL_HW_EE", "DL_GFCF_EE")
 ts.plot(data_ee)
 plot.ts(data_ee)
 
 # Skirtingos dimensijos. Reikia ištrinti eilutes, kuriose yra NA
 # Išmetame pirmas 20 eilučių, kurioms neturime darbo kintamojo
 #data_ee <- data_ee[-1:-20,]
-data_ee <- data_ee[!is.na(data_ee$L_HW_EE),];beep()
+data_ee <- data_ee[!is.na(data_ee$DL_HW_EE),];beep()
 plot.ts(data_ee)
 ts.plot(data_ee)
 # data_ee$log.HW_EE. <- diff(data_ee$log.HW_EE.)
@@ -46,33 +47,42 @@ acf(residuals(var_ee))
 # Paklaidų normališkumo testas
 normality.test(var_ee, multivariate.only = FALSE)
 # Daugiamatis Grangerio priežastingumo testas
-causality(var_ee, cause = "L_GDP_GAP_EE")
-causality(var_ee, cause = "DL_EMPL_RP")
-causality(var_ltu, cause = "DL_GFKF")
+causality(var_ee, cause = "DL_GDP_GAP_EE")
+causality(var_ee, cause = "DL_HW_EE")
+causality(var_ee, cause = "DL_GFCF_EE")
 # Pirmas porinis Grangerio priežastingumo testas
-data_ee1 <- with(data_prod, cbind(L_GDP_GAP, DL_EMPL_RP))
+data_ee1 <- data.frame(with(data_prod, cbind(L_GDP_GAP_EE, DL_HW_EE)))
+# ištriname eilutes, kuriose trūksta duomenų
+data_ee1 <- data_ee1[!is.na(data_ee1$DL_HW_EE),];beep()
+#
 var_ee1 <- VAR(data_ee1, p = 4)
 summary(var_ee1)
 acf(residuals(var_ee1))
 Box.test(residuals(var_ee1)[, 2], lag = 8, type = "Ljung-Box")
-causality(var_ee1, cause = "L_GDP_GAP")
-causality(var_ee1, cause = "DL_EMPL_RP")
+causality(var_ee1, cause = "L_GDP_GAP_EE")
+causality(var_ee1, cause = "DL_HW_EE")
 # Antras porinis Grangerio priežastingumo testas
-data_ee2 <- with(data_prod, cbind(L_GDP_GAP, DL_GFKF))
+data_ee2 <- data.frame(with(data_prod, cbind(L_GDP_GAP_EE, DL_GFCF_EE)))
+# Ištriname eilutes, kuriose trūksta duomenų
+data_ee2 <- data_ee2[!is.na(data_ee2$DL_GFCF_EE),];beep()
+
 var_ee2 <- VAR(data_ee2, p = 4)
 summary(var_ee2)
 acf(residuals(var_ee2))
 Box.test(residuals(var_ee2)[, 2], lag = 8, type = "Ljung-Box")
-causality(var_ee2, cause = "L_GDP_GAP")
-causality(var_ee2, cause = "DL_GFKF")
+causality(var_ee2, cause = "L_GDP_GAP_EE")
+causality(var_ee2, cause = "DL_GFCF_EE")
 # Trečias porinis Grangerio priežastingumo testas
-data_ee3 <- with(data_prod, cbind(DL_EMPL_RP, DL_GFKF))
+data_ee3 <- data.frame(with(data_prod, cbind(DL_HW_EE, DL_GFCF_EE)))
+# Ištriname eilutes, kuriose trūksta duomenų
+data_ee3 <- data_ee3[!is.na(data_ee3$DL_HW_EE),];beep()
+
 var_ee3 <- VAR(data_ee3, p = 4)
 summary(var_ee3)
 acf(residuals(var_ee3))
 Box.test(residuals(var_ee3)[, 2], lag = 8, type = "Ljung-Box")
-causality(var_ee3, cause = "DL_EMPL_RP")
-causality(var_ee3, cause = "DL_GFKF")
+causality(var_ee3, cause = "DL_HW_EE")
+causality(var_ee3, cause = "DL_GFCF_EE")
 # Struktūrinio A tipo SVAR'o įvertinimas
 AM <- diag(3)
 AM[1, 2] <- NA
@@ -88,11 +98,11 @@ irf(svar_ee, boot = FALSE)
 fevd(svar_ee)
 
 # Gamybos spraga. Cycle
-y_gap_ee <- hpfilter(L_GDP, freq = 1600)$cycle*100
+y_gap_ee <- with(data_prod, hpfilter(L_GDP_EE, freq = 1600)$cycle*100)
 ts.plot(y_gap_ee)
 ts.plot(L_GDP_EE)
 # Potencialus BVP iš mechaninio ex post 
-y_pot_ee <- ts(hpfilter(L_GDP_EE, freq = 1600)$trend, start = c(1998, 3), frequency = 4)
+y_pot_ee <- ts(hpfilter(L_GDP_EE, freq = 1600)$trend, start = c(1995, 3), frequency = 4)
 lines(y_pot_ee, col = "blue")
 # Redukuotos formos VAR'o įvertinimas
 data_ee2 <- with(phillips_lt2, cbind(DL_GFKF, DL_EMPL_RP, y_gap))
