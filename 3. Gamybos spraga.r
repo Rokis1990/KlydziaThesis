@@ -102,16 +102,21 @@ y_gap_ee <- with(data_prod, hpfilter(L_GDP_EE, freq = 1600)$cycle*100)
 ts.plot(y_gap_ee)
 ts.plot(L_GDP_EE)
 # Potencialus BVP iš mechaninio ex post 
-y_pot_ee <- ts(hpfilter(L_GDP_EE, freq = 1600)$trend, start = c(1995, 3), frequency = 4)
+y_pot_ee <- ts(hpfilter(L_GDP_EE, freq = 1600)$trend, start = c(1995, 1), frequency = 4)
 lines(y_pot_ee, col = "blue")
 # Redukuotos formos VAR'o įvertinimas
-data_ee2 <- with(phillips_lt2, cbind(DL_GFKF, DL_EMPL_RP, y_gap))
-VARselect(data_ee2, lag.max = 8)
-var_ee2 <- VAR(data_ee2, p = 5)
-summary(var_ee2)
-acf(residuals(var_ee2))
+data_ee22 <- data.frame(with(data_prod, cbind(DL_GFCF_EE, DL_HW_EE, y_gap_ee)))
+plot.ts(data_ee22)
+# Ištriname eilutes, kuriose trūksta duomenų
+data_ee22 <- data_ee22[!is.na(data_ee22$DL_GFCF_EE),];beep()
+data_ee22 <- data_ee22[!is.na(data_ee22$DL_HW_EE),];beep()
+plot.ts(data_ee22)
+VARselect(data_ee22, lag.max = 8)
+var_ee22 <- VAR(data_ee22, p = 5)
+summary(var_ee22)
+acf(residuals(var_ee22))
 # Blanchardo-Quah SVAR'o įvertinimas
-bq_svar_ee <- BQ(var_ee2)
+bq_svar_ee <- BQ(var_ee22)
 bq_svar_ee
 plot(irf(bq_svar_ee))
 irf(bq_svar_ee, boot = FALSE)
