@@ -734,121 +734,121 @@ fevd(bq_svar_hu)
 
 ### Rekursinis gamybos spragos suradimas hp filtro pagalba
 # Paverčiame Rumunijos BVP duomenis laiko eilutėmis
-L_GDP_HU <- with(data_prod, ts(log(GDP_HU), start = c(1995, 1), frequency = 4))
+L_GDP_RO <- with(data_prod, ts(log(GDP_RO), start = c(1995, 1), frequency = 4))
 
 # 
-n <- length(L_GDP_HU)
+n <- length(L_GDP_RO)
 k <- 12
 ### HPFilter su trendu
 # Apskaičiuojame potencialų Lenkijos BVP, naudodami Hodrick-Prescott filtrą
-POT_L_GDP_HU <- c(hpfilter(L_GDP_HU[1:k], freq = 1600, drift = FALSE)$trend, rep(NA, n - k))
+POT_L_GDP_RO <- c(hpfilter(L_GDP_RO[1:k], freq = 1600, drift = FALSE)$trend, rep(NA, n - k))
 # Rekursyviniu būdu surandame potencialų BVP
 for (i in (k + 1):n) {
-  POT_L_GDP_HU[i] <- tail(hpfilter(L_GDP_HU[1:i], freq = 1600)$trend, 1)
+  POT_L_GDP_RO[i] <- tail(hpfilter(L_GDP_RO[1:i], freq = 1600)$trend, 1)
 }
-POT_L_GDP_HU <- ts(POT_L_GDP_HU, start = c(1995, 1), frequency = 4)
-ts.plot(L_GDP_HU)
-lines(POT_L_GDP_HU, col = "blue")
+POT_L_GDP_RO <- ts(POT_L_GDP_RO, start = c(1995, 1), frequency = 4)
+ts.plot(L_GDP_RO)
+lines(POT_L_GDP_RO, col = "blue")
 
 # Apskaičiuojame gamybos spragą
-L_GDP_GAP_HU <- (L_GDP_HU - POT_L_GDP_HU)*100
-ts.plot(L_GDP_GAP_HU)
+L_GDP_GAP_RO <- (L_GDP_RO - POT_L_GDP_RO)*100
+ts.plot(L_GDP_GAP_RO)
 
 ### Redukuotos formos VAR'o įvertinimas
 # Apjungiame duomenis analizei
-data_hu <- data.frame(diff(with(data_prod, cbind(L_GDP_GAP_HU, L_HW_HU, L_GFCF_HU))))
-names(data_hu) <- c("DL_GDP_GAP_HU", "DL_HW_HU", "DL_GFCF_HU")
-ts.plot(data_hu)
-plot.ts(data_hu)
+data_ro <- data.frame(diff(with(data_prod, cbind(L_GDP_GAP_RO, L_HW_RO, L_GFCF_RO))))
+names(data_ro) <- c("DL_GDP_GAP_RO", "DL_HW_RO", "DL_GFCF_RO")
+ts.plot(data_ro)
+plot.ts(data_ro)
 
 # Skirtingos dimensijos. Reikia ištrinti eilutes, kuriose yra NA
 # Išmetame pirmas 20 eilučių, kurioms neturime darbo kintamojo
 #data_ee <- data_ee[-1:-20,]
-data_hu <- data_hu[!is.na(data_hu$DL_HW_HU),];beep()
-data_hu <- data_hu[!is.na(data_hu$DL_GFCF_HU),];beep()
-plot.ts(data_hu)
-ts.plot(data_hu)
+data_ro <- data_ro[!is.na(data_ro$DL_HW_RO),];beep()
+data_ro <- data_ro[!is.na(data_ro$DL_GFCF_RO),];beep()
+plot.ts(data_ro)
+ts.plot(data_ro)
 # data_ee$log.HW_EE. <- diff(data_ee$log.HW_EE.)
 
 
-VARselect(data_hu, lag.max = 8)
-var_hu <- VAR(data_hu, p = 4)
-summary(var_hu)
-acf(residuals(var_hu))
+VARselect(data_ro, lag.max = 8)
+var_ro <- VAR(data_ro, p = 4)
+summary(var_ro)
+acf(residuals(var_ro))
 # Paklaidų normališkumo testas
-normality.test(var_hu, multivariate.only = FALSE)
+normality.test(var_ro, multivariate.only = FALSE)
 # Daugiamatis Grangerio priežastingumo testas
-causality(var_hu, cause = "DL_GDP_GAP_HU")
-causality(var_hu, cause = "DL_HW_HU")
-causality(var_hu, cause = "DL_GFCF_HU")
+causality(var_ro, cause = "DL_GDP_GAP_RO")
+causality(var_ro, cause = "DL_HW_RO")
+causality(var_ro, cause = "DL_GFCF_RO")
 # Pirmas porinis Grangerio priežastingumo testas
-data_hu1 <- data.frame(with(data_prod, cbind(L_GDP_GAP_HU, DL_HW_HU)))
+data_ro1 <- data.frame(with(data_prod, cbind(L_GDP_GAP_RO, DL_HW_RO)))
 # ištriname eilutes, kuriose trūksta duomenų
-data_hu1 <- data_hu1[!is.na(data_hu1$DL_HW_HU),];beep()
+data_ro1 <- data_ro1[!is.na(data_ro1$DL_HW_RO),];beep()
 #
-var_hu1 <- VAR(data_hu1, p = 4)
-summary(var_hu1)
+var_ro1 <- VAR(data_ro1, p = 4)
+summary(var_ro1)
 acf(residuals(var_lv1))
-Box.test(residuals(var_hu1)[, 2], lag = 8, type = "Ljung-Box")
-causality(var_hu1, cause = "L_GDP_GAP_HU")
-causality(var_hu1, cause = "DL_HW_HU")
+Box.test(residuals(var_ro1)[, 2], lag = 8, type = "Ljung-Box")
+causality(var_ro1, cause = "L_GDP_GAP_RO")
+causality(var_ro1, cause = "DL_HW_RO")
 # Antras porinis Grangerio priežastingumo testas
-data_hu2 <- data.frame(with(data_prod, cbind(L_GDP_GAP_HU, DL_GFCF_HU)))
+data_ro2 <- data.frame(with(data_prod, cbind(L_GDP_GAP_RO, DL_GFCF_RO)))
 # Ištriname eilutes, kuriose trūksta duomenų
-data_hu2 <- data_hu2[!is.na(data_hu2$DL_GFCF_HU),];beep()
+data_ro2 <- data_ro2[!is.na(data_ro2$DL_GFCF_RO),];beep()
 
-var_hu2 <- VAR(data_hu2, p = 4)
-summary(var_hu2)
-acf(residuals(var_hu2))
-Box.test(residuals(var_hu2)[, 2], lag = 8, type = "Ljung-Box")
-causality(var_hu2, cause = "L_GDP_GAP_HU")
-causality(var_hu2, cause = "DL_GFCF_HU")
+var_ro2 <- VAR(data_ro2, p = 4)
+summary(var_ro2)
+acf(residuals(var_ro2))
+Box.test(residuals(var_ro2)[, 2], lag = 8, type = "Ljung-Box")
+causality(var_ro2, cause = "L_GDP_GAP_RO")
+causality(var_ro2, cause = "DL_GFCF_RO")
 # Trečias porinis Grangerio priežastingumo testas
-data_hu3 <- data.frame(with(data_prod, cbind(DL_HW_HU, DL_GFCF_HU)))
+data_ro3 <- data.frame(with(data_prod, cbind(DL_HW_RO, DL_GFCF_RO)))
 # Ištriname eilutes, kuriose trūksta duomenų
-data_hu3 <- data_hu3[!is.na(data_hu3$DL_HW_HU),];beep()
-data_hu3 <- data_hu3[!is.na(data_hu3$DL_GFCF_HU),];beep()
-var_hu3 <- VAR(data_hu3, p = 4)
-summary(var_hu3)
-acf(residuals(var_hu3))
-Box.test(residuals(var_hu3)[, 2], lag = 8, type = "Ljung-Box")
-causality(var_hu3, cause = "DL_HW_HU")
-causality(var_hu3, cause = "DL_GFCF_HU")
+data_ro3 <- data_ro3[!is.na(data_ro3$DL_HW_RO),];beep()
+data_ro3 <- data_ro3[!is.na(data_ro3$DL_GFCF_RO),];beep()
+var_ro3 <- VAR(data_ro3, p = 4)
+summary(var_ro3)
+acf(residuals(var_ro3))
+Box.test(residuals(var_ro3)[, 2], lag = 8, type = "Ljung-Box")
+causality(var_ro3, cause = "DL_HW_RO")
+causality(var_ro3, cause = "DL_GFCF_RO")
 # Struktūrinio A tipo SVAR'o įvertinimas
 AM
-svar_hu <- SVAR(var_hu, estmethod = "direct", Amat = AM, 
+svar_ro <- SVAR(var_ro, estmethod = "direct", Amat = AM, 
                 method = "BFGS", hessian = TRUE)
-svar_hu
-svar_hu$A/svar_hu$Ase
-plot(irf(svar_hu))
-irf(svar_hu, boot = FALSE)
-fevd(svar_hu)
+svar_ro
+svar_ro$A/svar_ro$Ase
+plot(irf(svar_ro))
+irf(svar_ro, boot = FALSE)
+fevd(svar_ro)
 
 # Gamybos spraga. Cycle
-y_gap_hu <- with(data_prod, hpfilter(L_GDP_HU, freq = 1600)$cycle*100)
-ts.plot(y_gap_hu)
-ts.plot(L_GDP_HU)
+y_gap_ro <- with(data_prod, hpfilter(L_GDP_RO, freq = 1600)$cycle*100)
+ts.plot(y_gap_ro)
+ts.plot(L_GDP_RO)
 # Potencialus BVP iš mechaninio ex post 
-y_pot_hu <- ts(hpfilter(L_GDP_HU, freq = 1600)$trend, start = c(1995, 1), frequency = 4)
-lines(y_pot_hu, col = "blue")
+y_pot_ro <- ts(hpfilter(L_GDP_RO, freq = 1600)$trend, start = c(1995, 1), frequency = 4)
+lines(y_pot_ro, col = "blue")
 # Redukuotos formos VAR'o įvertinimas
-data_hu22 <- data.frame(with(data_prod, cbind(DL_GFCF_HU, DL_HW_HU, y_gap_hu)))
-plot.ts(data_hu22)
+data_ro22 <- data.frame(with(data_prod, cbind(DL_GFCF_RO, DL_HW_RO, y_gap_ro)))
+plot.ts(data_ro22)
 # Ištriname eilutes, kuriose trūksta duomenų
-data_hu22 <- data_hu22[!is.na(data_hu22$DL_GFCF_HU),];beep()
-data_hu22 <- data_hu22[!is.na(data_hu22$DL_HW_HU),];beep()
+data_ro22 <- data_ro22[!is.na(data_ro22$DL_GFCF_RO),];beep()
+data_ro22 <- data_ro22[!is.na(data_ro22$DL_HW_RO),];beep()
 # data_lv22 <- data_lv22[!is.na(data_lv22$DL_HW_LV),];beep()
-plot.ts(data_hu22)
-VARselect(data_hu22, lag.max = 8)
-var_hu22 <- VAR(data_hu22, p = 5)
-summary(var_hu22)
-acf(residuals(var_hu22))
+plot.ts(data_ro22)
+VARselect(data_ro22, lag.max = 8)
+var_ro22 <- VAR(data_ro22, p = 5)
+summary(var_ro22)
+acf(residuals(var_ro22))
 # Blanchardo-Quah SVAR'o įvertinimas
-bq_svar_hu <- BQ(var_hu22)
-bq_svar_hu
-plot(irf(bq_svar_hu))
-irf(bq_svar_hu, boot = FALSE)
-fevd(bq_svar_hu)
+bq_svar_ro <- BQ(var_ro22)
+bq_svar_ro
+plot(irf(bq_svar_ro))
+irf(bq_svar_ro, boot = FALSE)
+fevd(bq_svar_ro)
 
 
 
@@ -1442,3 +1442,6 @@ bq_svar
 plot(irf(bq_svar))
 irf(bq_svar, boot = FALSE)
 fevd(bq_svar)
+
+
+
