@@ -26,28 +26,28 @@ for(y in 1:3) {
 ###################################################
 # Estijos Cobb-Douglas visuminė gamybos funkcija
 ###################################################
-phillips_lt2 <- read.delim("~/R/TS/phillips_lt2.txt")
-attach(phillips_lt2)
+
 ###########################################
 ###########################################
 ## 1. Neapribota Cobbo-Douglaso funkcija ##
 ###########################################
 ###########################################
 # BVP logaritmas
-L_GDP <- with(data_prod, ts(L_GDP, start = c(1998, 3), frequency = 4))
+L_GDP_EE <- with(data_prod, ts(L_GDP_EE, start = c(1995, 1), frequency = 4))
 # Užimtumo logaritmas
-L_EMPL_RP <- ts(L_EMPL_RP, start = c(1998, 3), frequency = 4)
+L_HW_EE <- with(data_prod, ts(L_HW_EE, start = c(1995, 1), frequency = 4))
 # Kapitalo logaritmas
-L_GFKF <- ts(L_GFKF, start = c(1998, 3), frequency = 4)
+L_GFCF_EE <- with(data_prod, ts(L_GFCF_EE, start = c(1995, 1), frequency = 4))
 # Nestacionarių, bet kointegruotų kintamųjų matrica
-data_lt0 <- cbind(L_GDP, L_EMPL_RP, L_GFKF)
-plot.ts(data_lt0)
+data_ee0 <- as.data.frame(cbind(L_GDP_EE, L_HW_EE, L_GFCF_EE))
+data_ee0 <- data_ee0[!is.na(data_ee0$L_HW_EE),];beep()
+plot.ts(data_ee0)
 # Fiktyus krizės kintamasis, 2009 m. prilygintas 1
-crisis <- c(rep(0, 42), rep(1, 4), rep(0, 32))
+crisis <- c(rep(0, 59), rep(1, 4), rep(0, 32))
 crisis <- as.matrix(crisis)
 colnames(crisis) <- c("crisis")
 # Johanseno testai
-joh_lt_trace0 <- ca.jo(data_lt0, type = "trace", ecdet = "const", 
+joh_ee_trace0 <- ca.jo(data_ee0, type = "trace", ecdet = "const", 
                        K = 5, spec = "transitory", dumvar = crisis)
 summary(joh_lt_trace0)
 joh_lt_eigen0 <- ca.jo(data_lt0, type = "eigen", ecdet = "const", 
@@ -89,11 +89,11 @@ round(vecm_lt0$beta, 4)
 ##########################################
 ##########################################
 # BVP ir užimtumo santykio logaritmas
-L_GDP_PW <- ts(L_GDP - L_EMPL_RP, start = c(1998, 3), frequency = 4)
+L_GDP_EE_PW <- ts(L_GDP_EE - L_HW_EE, start = c(1998, 3), frequency = 4)
 # Kapitalo ir užimtumo santykio logaritmas
-L_GFKF_PW <- ts(L_GFKF - L_EMPL_RP, start = c(1998, 3), frequency = 4)
+L_GFCF_EE_PW <- ts(L_GFCF_EE - L_HW_EE, start = c(1998, 3), frequency = 4)
 # Nestacionarių, tačiau kointegruotų kintamųjų matrica
-data_lt <- cbind(L_GDP_PW, L_GFKF_PW)
+data_lt <- cbind(L_GDP_EE_PW, L_GFCF_EE_PW)
 plot.ts(data_lt)
 # Johanseno testai, į kointegruojantį vektorių įtraukiant trendą
 joh_lt_trace_trend <- ca.jo(data_lt, type = "trace", ecdet = "trend", 
@@ -113,7 +113,7 @@ summary(vecm_lt_trend_eq)
 # kuris yra ~0.47. Atitinkamai BVP elastingumas užimtumui yra ~0.53
 round(vecm_lt_trend$beta, 4)
 # Pusiausvyros paklaidos (formulėse trumpintos kaip e) išmatavimas
-trend <- 1:length(L_GDP_PW)
+trend <- 1:length(L_GDP_EE_PW)
 eq_error <- cbind(data_lt, trend)%*%vecm_lt_trend$beta
 ts.plot(eq_error)
 mean(eq_error)
@@ -200,11 +200,11 @@ summary(ur.pp(res_hicks, type = "Z-tau"))
 ####################
 ## 3. ADL modelis ##
 ####################
-DL_GDP_PW <- (DL_GDP - DL_EMPL_RP)/100
-DL_GFKF_PW <- (DL_GFKF - DL_EMPL_RP)/100
-adl_lt <- lm(DL_GFKF_PW ~ L_GDP_PW + L_GFKF_PW + trend + DL_GDP_PW 
-             + Lag(DL_GDP_PW, 1) + Lag(DL_GFKF_PW, 1) + Lag(DL_GDP_PW, 2) 
-             + Lag(DL_GFKF_PW, 8))
+DL_GDP_EE_PW <- (DL_GDP_EE - DL_HW_EE)/100
+DL_GFCF_EE_PW <- (DL_GFCF_EE - DL_HW_EE)/100
+adl_lt <- lm(DL_GFCF_EE_PW ~ L_GDP_EE_PW + L_GFCF_EE_PW + trend + DL_GDP_EE_PW 
+             + Lag(DL_GDP_EE_PW, 1) + Lag(DL_GFCF_EE_PW, 1) + Lag(DL_GDP_EE_PW, 2) 
+             + Lag(DL_GFCF_EE_PW, 8))
 summary(adl_lt)
 res_adl_lt <- residuals(adl_lt)
 acf(res_adl_lt)
