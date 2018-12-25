@@ -1,5 +1,10 @@
+####################################
+# 4.0 Cobb-Douglas gamybos funkcija
+####################################
+
+
 ##############################
-#### 4.0 Kalman filter use example
+#### Kalman filter use example
 ##############################
 
 ## an ARIMA fit
@@ -19,7 +24,7 @@ for(y in 1:3) {
 }
 
 ###################################################
-# Estijos Cobb-Douglas visuotinė gamybos funkcija
+# Estijos Cobb-Douglas visuminė gamybos funkcija
 ###################################################
 phillips_lt2 <- read.delim("~/R/TS/phillips_lt2.txt")
 attach(phillips_lt2)
@@ -205,31 +210,31 @@ res_adl_lt <- residuals(adl_lt)
 acf(res_adl_lt)
 
 ###################################################
-# Latvijos Cobb-Douglas visuotinė gamybos funkcija
+# Latvijos Cobb-Douglas visuminė gamybos funkcija
 ###################################################
 
 
 ###################################################
-# Lietuvos Cobb-Douglas visuotinė gamybos funkcija
+# Lietuvos Cobb-Douglas visuminė gamybos funkcija
 ###################################################
 
 
 ###################################################
-# Lenkijos Cobb-Douglas visuotinė gamybos funkcija
+# Lenkijos Cobb-Douglas visuminė gamybos funkcija
 ###################################################
 
 
 ###################################################
-# Čekijos Cobb-Douglas visuotinė gamybos funkcija
+# Čekijos Cobb-Douglas visuminė gamybos funkcija
 ###################################################
 
 
 ###################################################
-# Vengrijos Cobb-Douglas visuotinė gamybos funkcija
+# Vengrijos Cobb-Douglas visuminė gamybos funkcija
 ###################################################
 
 
 ###################################################
-# Rumunijos Cobb-Douglas visuotinė gamybos funkcija
+# Rumunijos Cobb-Douglas visuminė gamybos funkcija
 ###################################################
 
