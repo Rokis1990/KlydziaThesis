@@ -34,15 +34,15 @@ attach(phillips_lt2)
 ###########################################
 ###########################################
 # BVP logaritmas
-L_GDP <- ts(L_GDP, start = c(1998, 3), frequency = 4)
-# U?imtumo logaritmas
+L_GDP <- with(data_prod, ts(L_GDP, start = c(1998, 3), frequency = 4))
+# Užimtumo logaritmas
 L_EMPL_RP <- ts(L_EMPL_RP, start = c(1998, 3), frequency = 4)
 # Kapitalo logaritmas
 L_GFKF <- ts(L_GFKF, start = c(1998, 3), frequency = 4)
-# Nestacionari?, bet kointegruot? kintam?j? matrica
+# Nestacionarių, bet kointegruotų kintamųjų matrica
 data_lt0 <- cbind(L_GDP, L_EMPL_RP, L_GFKF)
 plot.ts(data_lt0)
-# Fiktyus kriz?s kintamasis, 2009 m. prilygintas 1
+# Fiktyus krizės kintamasis, 2009 m. prilygintas 1
 crisis <- c(rep(0, 42), rep(1, 4), rep(0, 32))
 crisis <- as.matrix(crisis)
 colnames(crisis) <- c("crisis")
@@ -54,65 +54,65 @@ joh_lt_eigen0 <- ca.jo(data_lt0, type = "eigen", ecdet = "const",
                        K = 5, spec = "transitory", dumvar = crisis)
 summary(joh_lt_eigen0)
 ############################################
-# Paklaidos korekcijos modelio i?matavimas #
-# su dviem kointegruojan?iais vektoriais,  #
-# pagal p?dsako (trace) testo parodymus    #
+# Paklaidos korekcijos modelio išmatavimas #
+# su dviem kointegruojančiais vektoriais,  #
+# pagal pėdsako (trace) testo parodymus    #
 ############################################
 vecm_lt0 <- cajorls(joh_lt_trace0, r = 2)
 vecm_lt_eq0 <- vecm_lt0$rlm
-# Nei?sprend?iama autokoreliacija pirmos lygties paklaidose
+# Neišsprendžiama autokoreliacija pirmos lygties paklaidose
 acf(residuals(vecm_lt_eq0))
 summary(vecm_lt_eq0)
 round(vecm_lt0$beta, 4)
 ############################################
-# Paklaidos korekcijos modelio i?matavimas #
-# su vienu kointegruojan?iu vektoriumi,    #
-# pagal maksimalios tikrin?s reik?m?s      #
+# Paklaidos korekcijos modelio išmatavimas #
+# su vienu kointegruojančiu vektoriumi,    #
+# pagal maksimalios tikrinės reikšmės      #
 # (eigen) testo parodymus                  #
 ############################################
 vecm_lt0 <- cajorls(joh_lt_trace0, r = 1)
 vecm_lt_eq0 <- vecm_lt0$rlm
-# Nei?sprend?iama autokoreliacija pirmos lygties paklaidose
+# Neišsprendžiama autokoreliacija pirmos lygties paklaidose
 acf(residuals(vecm_lt_eq0))
 summary(vecm_lt_eq0)
-# Ne?manomas paai?kinti ilgalaikis neigiamas u?imtumo poveikis gamybai
-# nebent tik tuo, kad Lietuvoje po finansin?s kriz?s gamyba augo, 
-# esant stagnuojan?iam u?imtumui
+# Neįmanomas paaiškinti ilgalaikis neigiamas užimtumo poveikis gamybai
+# nebent tik tuo, kad Lietuvoje po finansinės krizės gamyba augo, 
+# esant stagnuojančiam užimtumui
 round(vecm_lt0$beta, 4)
-# Reziumuojant galima pasakyti, kad Cobbo-Douglaso funkcija be 
-# be pastovios masto gr??os apribojimo nesuderinama su faktine
-# ?i? kintam?j? dinamika tiriamu laikotarpiu.
+# Reziumuojant galima pasakyti, kad Cobbo-Douglaso funkcija
+# be pastovios masto grąžos apribojimo nesuderinama su faktine
+# šių kintamųjų dinamika tiriamu laikotarpiu.
 ##########################################
 ##########################################
 ## 2. Cobbo-Douglaso gamybos funkcija   ##
-## su pastovios masto gr??os apribojimu ##
+## su pastovios masto grąžos apribojimu ##
 ##########################################
 ##########################################
-# BVP ir u?imtumo santykio logaritmas
+# BVP ir užimtumo santykio logaritmas
 L_GDP_PW <- ts(L_GDP - L_EMPL_RP, start = c(1998, 3), frequency = 4)
-# Kapitalo ir u?imtumo santykio logaritmas
+# Kapitalo ir užimtumo santykio logaritmas
 L_GFKF_PW <- ts(L_GFKF - L_EMPL_RP, start = c(1998, 3), frequency = 4)
-# Nestacionari?, ta?iau kointegruot? kintam?j? matrica
+# Nestacionarių, tačiau kointegruotų kintamųjų matrica
 data_lt <- cbind(L_GDP_PW, L_GFKF_PW)
 plot.ts(data_lt)
-# Johanseno testai, ? kointegruojant? vektori? ?traukiant trend?
+# Johanseno testai, į kointegruojantį vektorių įtraukiant trendą
 joh_lt_trace_trend <- ca.jo(data_lt, type = "trace", ecdet = "trend", 
                             K = 4, spec = "transitory", dumvar = crisis)
 summary(joh_lt_trace_trend)
 joh_lt_eigen_trend <- ca.jo(data_lt, type = "trace", ecdet = "trend", 
                             K = 4, spec = "transitory", dumvar = crisis)
 summary(joh_lt_eigen_trend)
-# Paklaidos korekcijos modelio i?matavimas
+# Paklaidos korekcijos modelio išmatavimas
 vecm_lt_trend <- cajorls(joh_lt_trace_trend, r = 1)
 vecm_lt_trend_eq <- vecm_lt_trend$rlm
 # Paklaidos neautokoreliuotos
 acf(residuals(vecm_lt_trend_eq))
-# Korekcijos grei?io koeficientas reik?mingas tik investicij? lygtyje
+# Korekcijos greičio koeficientas reikšmingas tik investicijų lygtyje
 summary(vecm_lt_trend_eq)
-# Kointegruojan?iame vektoriuje i?matuotas BVP elastingumas kapitalui,
-# kuris yra ~0.47. Atitinkamai BVP elastingumas u?imtumui yra ~0.53
+# Kointegruojančiame vektoriuje išmatuotas BVP elastingumas kapitalui,
+# kuris yra ~0.47. Atitinkamai BVP elastingumas užimtumui yra ~0.53
 round(vecm_lt_trend$beta, 4)
-# Pusiausvyros paklaidos (formul?se trumpintos kaip e) i?matavimas
+# Pusiausvyros paklaidos (formulėse trumpintos kaip e) išmatavimas
 trend <- 1:length(L_GDP_PW)
 eq_error <- cbind(data_lt, trend)%*%vecm_lt_trend$beta
 ts.plot(eq_error)
@@ -120,7 +120,7 @@ mean(eq_error)
 ############################################
 # Harrodo neutralios technologijos versija #
 ############################################
-# Kintamojo a i?matavimas
+# Kintamojo a išmatavimas
 a_techn_harrod <- (eq_error - vecm_lt_trend$beta[3]*trend)/
   (1 + vecm_lt_trend$beta[2])
 ts.plot(a_techn_harrod)
@@ -129,7 +129,7 @@ exp(a_techn_harrod)
 # Technologijos funkcija
 harrod_eq <- lm(a_techn_harrod ~ trend)
 summary(harrod_eq)
-# Technologijos trikd?i? AR modelis
+# Technologijos trikdžių AR modelis
 res_harrod <- residuals(harrod_eq)
 acf(res_harrod)
 pacf(res_harrod)
@@ -139,7 +139,7 @@ ar_harrod <- arima(res_harrod, order = c(8, 0, 0),
                    fixed = c(NA, rep(0, 6), NA))
 coeftest(ar_harrod)
 acf(residuals(ar_harrod))
-# Technologijos trikd?i? stacionarumo tikrinimas
+# Technologijos trikdžių stacionarumo tikrinimas
 df_harrod <- ur.df(res_harrod, type = "none", lags = 0)
 plot(df_harrod)
 summary(df_harrod)
@@ -147,7 +147,7 @@ summary(ur.pp(res_harrod, type = "Z-tau"))
 ##########################################
 # Solow neutralios technologijos versija #
 ##########################################
-# Kintamojo a i?matavimas
+# Kintamojo a išmatavimas
 a_techn_solow <- -(eq_error - vecm_lt_trend$beta[3]*trend)/
   vecm_lt_trend$beta[2]
 ts.plot(a_techn_solow)
@@ -156,7 +156,7 @@ exp(a_techn_solow)
 # Technologijos funkcija
 solow_eq <- lm(a_techn_solow ~ trend)
 summary(solow_eq)
-# Technologijos trikd?i? AR modelis
+# Technologijos trikdžių AR modelis
 res_solow <- residuals(solow_eq)
 acf(res_solow)
 pacf(res_solow)
@@ -166,7 +166,7 @@ ar_solow <- arima(res_solow, order = c(8, 0, 0),
                   fixed = c(NA, rep(0, 6), NA))
 coeftest(ar_solow)
 acf(residuals(ar_solow))
-# Technologijos trikd?i? stacionarumo tikrinimas
+# Technologijos trikdžių stacionarumo tikrinimas
 df_solow <- ur.df(res_solow, type = "none", lags = 0)
 plot(df_solow)
 summary(df_solow)
@@ -174,7 +174,7 @@ summary(ur.pp(res_solow, type = "Z-tau"))
 ###########################################
 # Hickso neutralios technologijos versija #
 ###########################################
-# Kintamojo a i?matavimas
+# Kintamojo a išmatavimas
 a_techn_hicks <- eq_error - vecm_lt_trend$beta[3]*trend
 ts.plot(a_techn_hicks)
 mean(a_techn_hicks)
@@ -182,7 +182,7 @@ exp(a_techn_hicks)
 # Technologijos funkcija
 hicks_eq <- lm(a_techn_hicks ~ trend)
 summary(hicks_eq)
-# Technologijos trikd?i? AR modelis
+# Technologijos trikdžių AR modelis
 res_hicks <- residuals(hicks_eq)
 acf(res_hicks)
 pacf(res_hicks)
@@ -192,7 +192,7 @@ ar_hicks <- arima(res_hicks, order = c(8, 0, 0),
                   fixed = c(NA, rep(0, 6), NA))
 coeftest(ar_hicks)
 acf(residuals(ar_hicks))
-# Technologijos trikd?i? stacionarumo tikrinimas
+# Technologijos trikdžių stacionarumo tikrinimas
 df_hicks <- ur.df(res_hicks, type = "none", lags = 0)
 plot(df_hicks)
 summary(df_hicks)
