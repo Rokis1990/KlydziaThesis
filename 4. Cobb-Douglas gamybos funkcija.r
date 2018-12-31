@@ -40,6 +40,8 @@ L_HW_EE <- with(data_prod, ts(L_HW_EE, start = c(1995, 1), frequency = 4))
 L_GFCF_EE <- with(data_prod, ts(L_GFCF_EE, start = c(1995, 1), frequency = 4))
 # Nestacionarių, bet kointegruotų kintamųjų matrica
 data_ee0 <- as.data.frame(cbind(L_GDP_EE, L_HW_EE, L_GFCF_EE))
+# Dabar iištriname kur trūksta duomenų, o reikia išsaugoti dažnį, tad teks ištrinti visas 20 pirmųjų
+# duomenų eilučių (dabar lieka 14 ir 18)
 data_ee0 <- data_ee0[!is.na(data_ee0$L_HW_EE),];beep()
 plot.ts(data_ee0)
 # Fiktyus krizės kintamasis, 2009 m. prilygintas 1
@@ -213,6 +215,198 @@ acf(res_adl_lt)
 # Latvijos Cobb-Douglas visuminė gamybos funkcija
 ###################################################
 
+###########################################
+###########################################
+## 1. Neapribota Cobbo-Douglaso funkcija ##
+###########################################
+###########################################
+# BVP logaritmas
+L_GDP_LV <- with(data_prod, ts(L_GDP_LV, start = c(1995, 1), frequency = 4))
+# Užimtumo logaritmas
+L_HW_LV <- with(data_prod, ts(L_HW_LV, start = c(1995, 1), frequency = 4))
+# Kapitalo logaritmas
+L_GFCF_LV <- with(data_prod, ts(L_GFCF_LV, start = c(1995, 1), frequency = 4))
+# Nestacionarių, bet kointegruotų kintamųjų matrica
+data_lv0 <- as.data.frame(cbind(L_GDP_LV, L_HW_LV, L_GFCF_LV))
+#data_lv0 <- data_lv0[!is.na(data_lv0$L_HW_LV),];beep()
+plot.ts(data_lv0)
+# Fiktyus krizės kintamasis, 2009 m. prilygintas 1
+crisis <- c(rep(0, 59), rep(1, 4), rep(0, 32))
+crisis <- as.matrix(crisis)
+colnames(crisis) <- c("crisis")
+# Johanseno testai
+joh_lv_trace0 <- ca.jo(data_lv0, type = "trace", ecdet = "const", 
+                       K = 5, spec = "transitory", dumvar = crisis)
+summary(joh_lv_trace0)
+joh_lv_eigen0 <- ca.jo(data_lv0, type = "eigen", ecdet = "const", 
+                       K = 5, spec = "transitory", dumvar = crisis)
+summary(joh_lv_eigen0)
+############################################
+# Paklaidos korekcijos modelio išmatavimas #
+# su dviem kointegruojančiais vektoriais,  #
+# pagal pėdsako (trace) testo parodymus    #
+############################################
+vecm_lv0 <- cajorls(joh_lv_trace0, r = 2)
+vecm_lv_eq0 <- vecm_lv0$rlm
+# Neišsprendžiama autokoreliacija pirmos lygties paklaidose
+acf(residuals(vecm_lv_eq0))
+summary(vecm_lv_eq0)
+round(vecm_lv0$beta, 4)
+############################################
+# Paklaidos korekcijos modelio išmatavimas #
+# su vienu kointegruojančiu vektoriumi,    #
+# pagal maksimalios tikrinės reikšmės      #
+# (eigen) testo parodymus                  #
+############################################
+vecm_lv0 <- cajorls(joh_lv_trace0, r = 1)
+vecm_lv_eq0 <- vecm_lv0$rlm
+# Neišsprendžiama autokoreliacija pirmos lygties paklaidose
+acf(residuals(vecm_lv_eq0))
+summary(vecm_lv_eq0)
+# Neįmanomas paaiškinti ilgalaikis neigiamas užimtumo poveikis gamybai
+# nebent tik tuo, kad Lietuvoje po finansinės krizės gamyba augo, 
+# esant stagnuojančiam užimtumui
+round(vecm_lv0$beta, 4)
+# Reziumuojant galima pasakyti, kad Cobbo-Douglaso funkcija
+# be pastovios masto grąžos apribojimo nesuderinama su faktine
+# šių kintamųjų dinamika tiriamu laikotarpiu.
+##########################################
+##########################################
+## 2. Cobbo-Douglaso gamybos funkcija   ##
+## su pastovios masto grąžos apribojimu ##
+##########################################
+##########################################
+# BVP ir užimtumo santykio logaritmas
+L_GDP_LV_PW <- ts(L_GDP_LV - L_HW_LV, start = c(1998, 3), frequency = 4)
+# Kapitalo ir užimtumo santykio logaritmas
+L_GFCF_LV_PW <- ts(L_GFCF_LV - L_HW_LV, start = c(1998, 3), frequency = 4)
+# Nestacionarių, tačiau kointegruotų kintamųjų matrica
+data_lv <- cbind(L_GDP_LV_PW, L_GFCF_LV_PW)
+plot.ts(data_lv)
+# Johanseno testai, į kointegruojantį vektorių įtraukiant trendą
+joh_lv_trace_trend <- ca.jo(data_lv, type = "trace", ecdet = "trend", 
+                            K = 4, spec = "transitory", dumvar = crisis)
+summary(joh_lv_trace_trend)
+joh_lv_eigen_trend <- ca.jo(data_lv, type = "trace", ecdet = "trend", 
+                            K = 4, spec = "transitory", dumvar = crisis)
+summary(joh_lv_eigen_trend)
+# Paklaidos korekcijos modelio išmatavimas
+vecm_lv_trend <- cajorls(joh_lv_trace_trend, r = 1)
+vecm_lv_trend_eq <- vecm_lv_trend$rlm
+# Paklaidos neautokoreliuotos
+acf(residuals(vecm_lv_trend_eq))
+# Korekcijos greičio koeficientas reikšmingas tik investicijų lygtyje
+summary(vecm_lv_trend_eq)
+# Kointegruojančiame vektoriuje išmatuotas BVP elastingumas kapitalui,
+# kuris yra ~0.47. Atitinkamai BVP elastingumas užimtumui yra ~0.53
+round(vecm_lv_trend$beta, 4)
+# Pusiausvyros paklaidos (formulėse trumpintos kaip e) išmatavimas
+trend <- 1:length(L_GDP_LV_PW)
+eq_error <- cbind(data_lv, trend)%*%vecm_lv_trend$beta
+ts.plot(eq_error)
+mean(eq_error)
+############################################
+# Harrodo neutralios technologijos versija #
+############################################
+# Kintamojo a išmatavimas
+a_techn_harrod <- (eq_error - vecm_lv_trend$beta[3]*trend)/
+  (1 + vecm_lv_trend$beta[2])
+ts.plot(a_techn_harrod)
+mean(a_techn_harrod)
+exp(a_techn_harrod)
+# Technologijos funkcija
+harrod_eq <- lm(a_techn_harrod ~ trend)
+summary(harrod_eq)
+# Technologijos trikdžių AR modelis
+res_harrod <- residuals(harrod_eq)
+acf(res_harrod)
+pacf(res_harrod)
+ts.plot(res_harrod)
+ar_harrod <- arima(res_harrod, order = c(8, 0, 0), 
+                   include.mean = FALSE,
+                   fixed = c(NA, rep(0, 6), NA))
+coeftest(ar_harrod)
+acf(residuals(ar_harrod))
+# Technologijos trikdžių stacionarumo tikrinimas
+df_harrod <- ur.df(res_harrod, type = "none", lags = 0)
+plot(df_harrod)
+summary(df_harrod)
+summary(ur.pp(res_harrod, type = "Z-tau"))
+##########################################
+# Solow neutralios technologijos versija #
+##########################################
+# Kintamojo a išmatavimas
+a_techn_solow <- -(eq_error - vecm_lv_trend$beta[3]*trend)/
+  vecm_lv_trend$beta[2]
+ts.plot(a_techn_solow)
+mean(a_techn_solow)
+exp(a_techn_solow)
+# Technologijos funkcija
+solow_eq <- lm(a_techn_solow ~ trend)
+summary(solow_eq)
+# Technologijos trikdžių AR modelis
+res_solow <- residuals(solow_eq)
+acf(res_solow)
+pacf(res_solow)
+ts.plot(res_solow)
+ar_solow <- arima(res_solow, order = c(8, 0, 0), 
+                  include.mean = FALSE,
+                  fixed = c(NA, rep(0, 6), NA))
+coeftest(ar_solow)
+acf(residuals(ar_solow))
+# Technologijos trikdžių stacionarumo tikrinimas
+df_solow <- ur.df(res_solow, type = "none", lags = 0)
+plot(df_solow)
+summary(df_solow)
+summary(ur.pp(res_solow, type = "Z-tau"))
+###########################################
+# Hickso neutralios technologijos versija #
+###########################################
+# Kintamojo a išmatavimas
+a_techn_hicks <- eq_error - vecm_lv_trend$beta[3]*trend
+ts.plot(a_techn_hicks)
+mean(a_techn_hicks)
+exp(a_techn_hicks)
+# Technologijos funkcija
+hicks_eq <- lm(a_techn_hicks ~ trend)
+summary(hicks_eq)
+# Technologijos trikdžių AR modelis
+res_hicks <- residuals(hicks_eq)
+acf(res_hicks)
+pacf(res_hicks)
+ts.plot(res_hicks)
+ar_hicks <- arima(res_hicks, order = c(8, 0, 0), 
+                  include.mean = FALSE,
+                  fixed = c(NA, rep(0, 6), NA))
+coeftest(ar_hicks)
+acf(residuals(ar_hicks))
+# Technologijos trikdžių stacionarumo tikrinimas
+df_hicks <- ur.df(res_hicks, type = "none", lags = 0)
+plot(df_hicks)
+summary(df_hicks)
+summary(ur.pp(res_hicks, type = "Z-tau"))
+####################
+## 3. ADL modelis ##
+####################
+
+# Apskaičiuojame pirmus logritmuotų kintamųjų skirtumus
+DL_GDP_LV <- diff(L_GDP_LV)
+DL_HW_LV <- diff(L_HW_LV)
+# 
+DL_GDP_LV_PW <- (DL_GDP_LV - DL_HW_LV)/100
+
+# Apskaičiuojame pirmus skirtumus
+DL_GFCF_LV <- diff(L_GFCF_LV)
+
+DL_GFCF_LV_PW <- (DL_GFCF_LV - DL_HW_LV)/100
+
+# Reikia suvienodinti laiko eilučių ilgį
+adl_lv <- lm(DL_GFCF_LV_PW ~ L_GDP_LV_PW + L_GFCF_LV_PW + trend + DL_GDP_LV_PW 
+             + Lag(DL_GDP_LV_PW, 1) + Lag(DL_GFCF_LV_PW, 1) + Lag(DL_GDP_LV_PW, 2) 
+             + Lag(DL_GFCF_LV_PW, 8))
+summary(adl_lv)
+res_adl_lv <- residuals(adl_lv)
+acf(res_adl_lv)
 
 ###################################################
 # Lietuvos Cobb-Douglas visuminė gamybos funkcija
